@@ -32,10 +32,10 @@ The repo is structured as:
 -   Clone the repository to your local machine.
 -   Ensure that R and the required libraries (listed in `scripts/requirements.txt`) are installed
 -   Follow the execution order of scripts:
--- `scripts/01-download_data.R` Downloads raw data from the EWF Database
--- `scripts/02-clean_data.R` Processes and cleans the raw datasets
--- `scripts/03-exploratory_data_analysis.R` Performs exploratory analysis and visualization
--- `scripts/04-model_data.R` Fits Bayesian models and saves results
+    scripts/01-download_data.R` Downloads raw data from the EWF Database
+    scripts/02-clean_data.R` Processes and cleans the raw datasets
+    scripts/03-exploratory_data_analysis.R` Performs exploratory analysis and visualization
+    scripts/04-model_data.R` Fits Bayesian models and saves results
 -   The final paper can be generated using the Quarto document in `paper/`
 
 
