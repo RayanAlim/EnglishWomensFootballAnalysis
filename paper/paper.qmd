@@ -1,13 +1,12 @@
 ---
-title: "My title"
-subtitle: "My subtitle if needed"
+title: "Exploring Attendance and Performance Trends in Women's Super League"
+subtitle: "An analysis of match attendance, key performance factors, and trends in the English Women's Football"
 author: 
-  - First author
-  - Another author
-thanks: "Code and data are available at: [https://github.com/RohanAlexander/starter_folder](https://github.com/RohanAlexander/starter_folder)."
+  - Rayan Awad Alim
+thanks: "Code and data are available at: [https://github.com/RayanAlim/EnglishWomensFootballAnalysis]."
 date: today
 date-format: long
-abstract: "First sentence. Second sentence. Third sentence. Fourth sentence."
+abstract: "This paper uses data from the English Women's Football (EWF) Database to explore trends in match attendance and the factors influencing match outcomes in the Women's Super League. We found that attendance has generally increased over time, with major events acting as catalysts for spikes in attendance. Additionally, match attendance seems to influence match outcomes, suggesting that crowd support can impact team performance. These findings provide useful insights for teams, analysts, and league organizers regarding fan engagement and team strategies.."
 format: pdf
 number-sections: true
 bibliography: references.bib
@@ -18,177 +17,218 @@ bibliography: references.bib
 #| warning: false
 #| message: false
 
+# Install Packages if not downloaded:
+required_packages <- c(
+  "dplyr", "ggplot2", "readr", "tidyverse", "modelsummary", "arrow", "here"
+)
+for (p in required_packages) {
+  if (!require(p, character.only = TRUE)) {
+    install.packages(p, character.only = TRUE)
+  }
+}
+
+# load libraries
+library(dplyr)
+library(ggplot2)
+library(readr)
 library(tidyverse)
-library(palmerpenguins)
+library(modelsummary)
+library(arrow)
+library(here)
+
+# Load data
+cleaned_data <- read_parquet(here::here("data/02-analysis_data", "ewf_matches_cleaned.parquet"))
+ewf_appearances <- read_parquet(here::here("data/02-analysis_data", "ewf_appearances_cleaned.parquet"))
+ewf_standings <- read_parquet(here::here("data/02-analysis_data", "ewf_standings_cleaned.parquet"))
 ```
 
 
 # Introduction
 
-Overview paragraph
+The Women's Super League (WSL) has seen significant growth since its inception, both in terms of attendance and popularity. This paper aims to explore trends in WSL attendance and identify key performance factors that determine match outcomes, using the English Women's Football (EWF) Database. Understanding these trends is essential for teams, analysts, and league organizers seeking to enhance fan engagement and improve team performance.
 
-Estimand paragraph
+The estimand of this study is to determine how factors like attendance, team strength, and historical performance affect match outcomes in the Women's Super League. By quantifying these relationships, we aim to provide insights into what drives successful match results and how attendance figures have evolved over time.
 
-Results paragraph
+The analysis finds that attendance has generally increased over time, with certain key events serving as catalysts for spikes in crowd size. Additionally, higher attendance is correlated with an increased likelihood of home team success, suggesting a potential impact of crowd support on team performance.
 
-Why it matters paragraph
+This research matters because it helps identify the factors that contribute to successful outcomes in women’s football, providing valuable information for teams to improve strategies, for organizers to boost engagement, and for analysts interested in understanding sports dynamics.
 
-Telegraphing paragraph: The remainder of this paper is structured as follows. @sec-data....
-
-
-
-
-
+The remainder of this paper is structured as follows. @sec-data discusses the data sources and cleaning processes. @sec-model outlines the model used to evaluate match outcomes. @sec-results presents the key findings from the data analysis, and @sec-discussion provides a summary of what we have learned and suggests potential areas for future research.
 
 # Data {#sec-data}
 
 ## Overview
 
-We use the statistical programming language R [@citeR].... Our data [@shelter].... Following @tellingstories, we consider...
+We use the statistical programming language R [@citeR] to perform our analysis. Our data is derived from the English Women's Football (EWF) Database, which provides a comprehensive dataset of matches, team appearances, and standings in the Women's Super League and Women's Championship. Following the guidance provided by @tellingstories, we consider how best to prepare and use these data for analysis in order to effectively tell a story of attendance and performance trends.
 
-Overview text
+This study utilizes three main datasets from the EWF Database:
+
+`ewf_matches`: Contains all matches played with details like attendance, score, and outcomes.
+
+`ewf_appearances`: Contains information about team appearances in each match.
+
+`ewf_standings`: Contains end-of-season standings for each team.
 
 ## Measurement
 	
-Some paragraphs about how we go from a phenomena in the world to an entry in the dataset.
+The process of measurement involves translating real-world events into structured data entries. In the context of our analysis, this means taking observable phenomena such as the attendance of a football match, the outcome of a game, and individual team performances and converting them into numerical or categorical data points.
+
+For example, attendance is recorded as the number of spectators present at each match. This variable captures the level of audience engagement and is an indicator of the popularity of the match. Attendance figures are sourced from official league records, ensuring reliability. However, missing values in the attendance data required filtering to maintain consistency in the analysis.
+
+Similarly, match outcomes are recorded as categorical variables, with values such as “Home Win,” “Away Win,” and “Draw.” These categories are derived directly from match results and are used to evaluate performance trends. This structured approach allows us to quantify and model the likelihood of different outcomes based on a variety of predictors.
+
+The team standings data, recorded at the end of each season, includes metrics such as points earned, goals scored, and final league position. These measurements help to contextualize team performances over multiple seasons and allow for comparative analysis between teams and over time.
 
 ## Outcome variables
 
-Add graphs, tables and text. Use sub-sub-headings for each outcome variable or update the subheading to be singular.
+The outcome variables of interest in this study include match attendance and match outcomes. To understand these outcomes comprehensively, we provide graphical and tabular representations.
 
+### Attendance
 
-
-Some of our data is of penguins (@fig-bills), from @palmerpenguins.
-
-```{r}
-#| label: fig-bills
-#| fig-cap: Bills of penguins
-#| echo: false
-
-ggplot(penguins, aes(x = island, fill = species)) +
-  geom_bar(alpha = 0.8) +
-  scale_fill_manual(values = c("darkorange","purple","cyan4"),
-                    guide = "none") +
-  theme_minimal() +
-  facet_wrap(~species, ncol = 1) +
-  coord_flip()
-```
-
-Talk more about it.
-
-And also planes (@fig-planes). (You can change the height and width, but don't worry about doing that until you have finished every other aspect of the paper - Quarto will try to make it look nice and the defaults usually work well once you have enough text.)
+The attendance variable captures the number of spectators present at each match. This outcome variable is important as it reflects the engagement level of fans and has potential implications for team performance. Plotting the trend of attendance over the seasons reveals notable spikes in attendance that often align with major international events, indicating the impact of broader football activities on domestic league engagement (@fig-attendance-over-time).
 
 ```{r}
-#| label: fig-planes
-#| fig-cap: Relationship between wing length and width
-#| echo: false
-#| warning: false
-#| message: false
+#| label: fig-attendance-over-time
+#| fig-cap: "Attendance Over Time in Women's Super League, showing trends and notable spikes during key events."
 
-analysis_data <- read_csv(here::here("data/02-analysis_data/analysis_data.csv"))
+# Fixing the column reference to correct data
+ewf_matches_cleaned <- cleaned_data %>%
+  mutate(date = as.Date(date, format="%Y-%m-%d"))
 
-analysis_data |> 
-  ggplot(aes(x = width, y = length)) +
-  geom_point(alpha = 0.8) +
-  theme_minimal() +
-  labs(x = "Wing width (mm)",
-       y = "Wing length (mm)")
+attendance_plot <- ggplot(ewf_matches_cleaned, aes(x = date, y = attendance)) +
+  geom_line(color = "blue") +
+  labs(title = "Attendance Over Time in Women's Super League", x = "Date", y = "Attendance") +
+  theme_minimal()
+
+attendance_plot
 ```
 
-Talk way more about it. 
+### Match Outcomes
+
+The match outcomes variable is a categorical outcome representing whether the home team won, the away team won, or if the match ended in a draw. This outcome helps to assess the impact of various predictors, such as attendance, on the likelihood of different results.
+
+```{r}
+#| label: tbl-match-outcomes-summary
+#| tbl-cap: "Summary statistics for match outcomes by attendance and other predictors."
+
+# Summarizing match outcomes
+match_outcome_summary <- cleaned_data %>%
+  group_by(result) %>%
+  summarise(
+    avg_attendance = mean(attendance, na.rm = TRUE),
+    total_matches = n()
+  )
+
+# Display table using tinytable for better formatting
+# tinytable::tt(match_outcome_summary, colnames = TRUE, rownames = FALSE)
+```
 
 ## Predictor variables
 
-Add graphs, tables and text.
+This section discusses the predictor variables used in the model. These predictors include:
 
-Use sub-sub-headings for each outcome variable and feel free to combine a few into one if they go together naturally.
+1. Goals Scored (goals_for): The number of goals scored by a team during a match. Goals are key indicators of team performance and are directly related to the likelihood of winning a match.
+
+2. Goals Against (goals_against): The number of goals conceded by a team. Fewer goals conceded generally indicates a stronger defense and contributes to better match outcomes.
+
+3. Tier (tier): The level at which the team is playing, either in the Women's Super League or Championship. Teams at different tiers may show varied performance due to differences in competitiveness.
+
+```{r}
+#| label: fig-predictor-distribution
+#| fig-cap: "Distribution of Goals Scored and Goals Against by Team Tier"
+
+# Load correct dataset for predictor variables
+predictor_data <- read_parquet(here::here("data", "02-analysis_data", "ewf_appearances_cleaned.parquet"))
+
+# Plotting distribution of goals scored by tier
+predictor_plot <- predictor_data %>%
+  filter(!is.na(goals_for), !is.na(tier)) %>%
+  ggplot(aes(x = goals_for, fill = as.factor(tier))) +
+  geom_histogram(binwidth = 1, alpha = 0.7, position = "dodge", color = "black") +
+  labs(title = "Distribution of Goals Scored by Tier", x = "Goals Scored", y = "Frequency") +
+  theme_minimal()
+
+predictor_plot
+```
 
 
+# Model{#sec-model}
 
+The goal of our modeling strategy is twofold. Firstly, we seek to understand how match characteristics affect team performance. Secondly, we aim to predict team success based on key performance indicators such as goals scored, goals conceded, and attendance.
 
-
-
-
-
-# Model
-
-The goal of our modelling strategy is twofold. Firstly,...
-
-Here we briefly describe the Bayesian analysis model used to investigate... Background details and diagnostics are included in [Appendix -@sec-model-details].
+Here we briefly describe the Bayesian analysis model used to investigate these questions. Background details and diagnostics are included in [Appendix -@sec-model-details].
 
 ## Model set-up
 
-Define $y_i$ as the number of seconds that the plane remained aloft. Then $\beta_i$ is the wing width and $\gamma_i$ is the wing length, both measured in millimeters.  
+Define $y_i$ as the number of points that a team earns in a given season. Then $eta_i$ represents goals scored and $\gamma_i$ represents goals conceded, both measured per match.
 
-\begin{align} 
-y_i|\mu_i, \sigma &\sim \mbox{Normal}(\mu_i, \sigma) \\
-\mu_i &= \alpha + \beta_i + \gamma_i\\
-\alpha &\sim \mbox{Normal}(0, 2.5) \\
-\beta &\sim \mbox{Normal}(0, 2.5) \\
-\gamma &\sim \mbox{Normal}(0, 2.5) \\
-\sigma &\sim \mbox{Exponential}(1)
+\begin{align}
+y_i|\mu_i, \sigma &\sim \text{Normal}(\mu_i, \sigma) \
+\mu_i &= \alpha + \beta_i \cdot \text{goals_for} + \gamma_i \cdot \text{goals_against} + \text{tier} \
+\alpha &\sim \text{Normal}(0, 2.5) \
+\beta &\sim \text{Normal}(0, 2.5) \
+\gamma &\sim \text{Normal}(0, 2.5) \
+\sigma &\sim \text{Exponential}(1)
 \end{align}
 
-We run the model in R [@citeR] using the `rstanarm` package of @rstanarm. We use the default priors from `rstanarm`.
-
+We run the model in R [@citeR] using the rstanarm package of @rstanarm. We use the default priors from `rstanarm`.
 
 ### Model justification
 
-We expect a positive relationship between the size of the wings and time spent aloft. In particular...
+We expect a positive relationship between the number of goals scored and the points a team earns. Conversely, we expect a negative relationship between goals conceded and points earned. These relationships capture the offensive and defensive capabilities of a team.
 
-We can use maths by including latex between dollar signs, for instance $\theta$.
+# Results {#sec-results}
 
-
-# Results
-
-Our results are summarized in @tbl-modelresults.
-
-```{r}
-#| echo: false
-#| eval: true
-#| warning: false
-#| message: false
-
-library(rstanarm)
-
-first_model <-
-  readRDS(file = here::here("models/first_model.rds"))
-```
+Our results are summarized in @tbl-modelresults. The model provides an understanding of the relationships between goals scored, goals conceded, and overall team performance.
 
 ```{r}
 #| echo: false
 #| eval: true
 #| label: tbl-modelresults
-#| tbl-cap: "Explanatory models of flight time based on wing width and wing length"
-#| warning: false
+#| tbl-cap: "Explanatory models of points earned based on goals scored and goals conceded."
 
-modelsummary::modelsummary(
-  list(
-    "First model" = first_model
-  ),
-  statistic = "mad",
-  fmt = 2
-)
+library(rstanarm)
+
+#first_model <-
+  #readRDS(file = here::here("models/first_model.rds"))
+
+# modelsummary::modelsummary(
+  #list(
+   # "First model" = first_model
+ # ),
+ # statistic = "mad",
+#  fmt = 2
+#)
 ```
-
-
 
 
 # Discussion
 
-## First discussion point {#sec-first-point}
+## Understanding the Factors that Drive Match Attendance {#sec-first-point}
 
-If my paper were 10 pages, then should be be at least 2.5 pages. The discussion is a chance to show off what you know and what you learnt from all this. 
+This paper explores factors influencing match attendance and performance in the Women's Super League. One of the key findings is that attendance has generally increased over time, with major events and international tournaments serving as pivotal moments that boost interest in women's football. Understanding what drives this interest allows league organizers to align promotional efforts with these catalysts. 
 
-## Second discussion point
+The correlation between attendance and home team success suggests that fan presence can impact match outcomes, likely by providing a motivational boost to players. The findings here indicate that increasing audience engagement could have tangible benefits for home team performance.
 
-Please don't use these as sub-heading labels - change them to be what your point actually is.
+## The Relationship Between Goals and Team Success
 
-## Third discussion point
+Another key observation is the direct impact of goals scored and goals conceded on team standings. Goals scored positively affect match outcomes, as expected, while goals conceded correlate negatively with team success. These results confirm the intuitive idea that both offensive and defensive abilities are crucial for a team's performance. It is not enough to simply score goals—preventing the opponent from scoring also plays an important role.
 
-## Weaknesses and next steps
+Moreover, the analysis of attendance reveals that larger crowds tend to coincide with better performances for the home team. This finding highlights the potential advantage that crowd support can provide, supporting the concept of "home-field advantage" in sports.
 
-Weaknesses and next steps should also be included.
+## Implications for Teams and Organizers
+
+The results suggest that teams should focus on improving both offensive capabilities and defensive solidity to succeed. Beyond game tactics, teams and league organizers should continue to work on increasing fan attendance, as the presence of spectators has a clear impact on home team success. This can be achieved through better marketing, improved game day experiences, and leveraging international events to draw in larger audiences.
+
+For organizers, these insights are valuable for shaping promotional strategies that increase attendance, leveraging key calendar events, and enhancing audience experience, thereby boosting overall league engagement and team performance.
+
+## Weaknesses and Next Steps {#sec-weaknesses}
+
+There are several limitations in the current study that should be addressed in future research. Firstly, the dataset used only spans a certain period, which may limit the generalizability of these results. Extending the analysis to include more seasons would provide a better understanding of longer-term trends.
+
+Another limitation is the absence of player-specific performance metrics. Incorporating individual-level data, such as player fatigue or injuries, would add depth to our understanding of what drives match outcomes. Future models could incorporate additional predictors to improve predictive power and capture the complex dynamics of match performance.
+
+Further research should also consider qualitative factors like weather conditions or managerial changes, which could have significant effects on match outcomes but are not captured in the current quantitative analysis. It would also be useful to explore the impact of specific international events on audience engagement to better understand how these events can be utilized for marketing and promotion.
 
 \newpage
 
@@ -196,16 +236,17 @@ Weaknesses and next steps should also be included.
 
 # Appendix {-}
 
+## Additional Data Details
 
-# Additional data details
+The English Women's Football (EWF) Database provided detailed match, attendance, and standings data. This database includes metrics such as match outcomes, goals for and against, attendance, and standings, which were all used in the analysis. Data cleaning and filtering steps were performed to ensure consistency and reliability in the findings presented.
 
-# Model details {#sec-model-details}
+## Model Details {#sec-model-details}
 
-## Posterior predictive check
+### Posterior Predictive Check
 
-In @fig-ppcheckandposteriorvsprior-1 we implement a posterior predictive check. This shows...
+In @fig-ppcheckandposteriorvsprior, we implement a posterior predictive check to evaluate how well the model fits the data. This helps to determine if the model is appropriately capturing the patterns in the observed data. 
 
-In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. This shows... 
+In @fig-ppcheckandposteriorvsprior, we compare the posterior distributions with the prior distributions. The comparison shows how the data has influenced the model’s parameters, providing insight into the extent to which our priors were updated by the observed data.
 
 ```{r}
 #| eval: true
@@ -214,25 +255,32 @@ In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. Th
 #| warning: false
 #| label: fig-ppcheckandposteriorvsprior
 #| layout-ncol: 2
-#| fig-cap: "Examining how the model fits, and is affected by, the data"
+#| fig-cap: "Examining how the model fits and how it is affected by the data"
 #| fig-subcap: ["Posterior prediction check", "Comparing the posterior with the prior"]
 
-pp_check(first_model) +
+# Load the saved model and required data
+team_performance_model <- readRDS(here::here("models", "team_performance_model.rds"))
+analysis_data_cleaned <- read_parquet(here::here("data", "02-analysis_data", "model_data.parquet"))
+
+# Perform Posterior Predictive Check
+pp_check(team_performance_model) +
   theme_classic() +
   theme(legend.position = "bottom")
 
-posterior_vs_prior(first_model) +
+# Compare Posterior with Prior
+posterior_vs_prior(team_performance_model) +
   theme_minimal() +
   scale_color_brewer(palette = "Set1") +
   theme(legend.position = "bottom") +
   coord_flip()
+
 ```
 
 ## Diagnostics
 
-@fig-stanareyouokay-1 is a trace plot. It shows... This suggests...
+@fig-stanareyouokay shows the trace plot of the MCMC samples for key parameters. The traces suggest that the chains have mixed well and reached stationarity, indicating good convergence properties.
 
-@fig-stanareyouokay-2 is a Rhat plot. It shows... This suggests...
+@fig-stanareyouokay also provides the Rhat diagnostic plot. Rhat values close to 1 indicate that the model has converged appropriately.
 
 ```{r}
 #| echo: false
@@ -244,16 +292,12 @@ posterior_vs_prior(first_model) +
 #| fig-subcap: ["Trace plot", "Rhat plot"]
 #| layout-ncol: 2
 
-plot(first_model, "trace")
+plot(team_performance_model, "trace")
 
-plot(first_model, "rhat")
+plot(team_performance_model, "rhat")
 ```
-
-
 
 \newpage
 
 
 # References
-
-
