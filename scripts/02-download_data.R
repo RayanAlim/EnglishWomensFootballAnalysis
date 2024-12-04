@@ -4,6 +4,8 @@
 # Date: 3 December 2024
 # Contact: rayan.alim@mail.utoronto.ca
 # License: MIT
+# Pre-requisites: Make sure you are in the `EnglishWomensFootballAnalysis` rproj
+
 
 #### Workspace setup ####
 required_packages <- c("httr", "readr", "here")
@@ -18,8 +20,12 @@ library(readr)
 library(here)
 
 #### Download data ####
-base_url <- "https://raw.githubusercontent.com/probjects/ewf-database/main/data/"
-datasets <- c("ewf_matches.csv", "ewf_appearances.csv", "ewf_standings.csv")
+base_url <-
+  "https://raw.githubusercontent.com/probjects/ewf-database/main/data/"
+datasets <-
+  c("ewf_matches.csv",
+    "ewf_appearances.csv",
+    "ewf_standings.csv")
 
 # Download each dataset to raw data file
 for (dataset in datasets) {
@@ -33,11 +39,19 @@ for (dataset in datasets) {
     writeBin(content(response, "raw"), dest_file)
     message(paste("Downloaded", dataset, "successfully."))
   } else {
-    warning(paste("Failed to download", dataset, "with status code:", status_code(response)))
+    warning(paste(
+      "Failed to download",
+      dataset,
+      "with status code:",
+      status_code(response)
+    ))
   }
 }
 
 #### Save data ####
-ewf_matches <- read_csv(here("data", "01-raw_data", "ewf_matches.csv"))
-ewf_appearances <- read_csv(here("data", "01-raw_data", "ewf_appearances.csv"))
-ewf_standings <- read_csv(here("data", "01-raw_data", "ewf_standings.csv"))
+ewf_matches <-
+  read_csv(here("data", "01-raw_data", "ewf_matches.csv"))
+ewf_appearances <-
+  read_csv(here("data", "01-raw_data", "ewf_appearances.csv"))
+ewf_standings <-
+  read_csv(here("data", "01-raw_data", "ewf_standings.csv"))

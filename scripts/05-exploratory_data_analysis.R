@@ -4,17 +4,32 @@
 # Date: 3 December 2024
 # Contact: rayan.alim@mail.utoronto.ca
 # License: MIT
-# Pre-requisites:  Data should be downloaded and cleaned using scripts 02 and 03
+# Pre-requisites:  Data should be downloaded and cleaned using scripts 02 and 03, Make sure you are in the `EnglishWomensFootballAnalysis` rproj
+
 
 #### Workspace setup ####
+required_packages <- c("tidyverse", "here", "arrow")
+for (p in required_packages) {
+  if (!require(p, character.only = TRUE)) {
+    install.packages(p, character.only = TRUE)
+  }
+}
+
 library(tidyverse)
 library(here)
 library(arrow)
 
 # Load cleaned data
-cleaned_ewf_matches <- read_parquet(here::here("data", "02-analysis_data", "ewf_matches_cleaned.parquet"))
-cleaned_ewf_appearances <- read_parquet(here::here("data", "02-analysis_data", "ewf_appearances_cleaned.parquet"))
-cleaned_ewf_standings <- read_parquet(here::here("data", "02-analysis_data", "ewf_standings_cleaned.parquet"))
+cleaned_ewf_matches <-
+  read_parquet(here::here("data", "02-analysis_data", "ewf_matches_cleaned.parquet"))
+cleaned_ewf_appearances <-
+  read_parquet(here::here(
+    "data",
+    "02-analysis_data",
+    "ewf_appearances_cleaned.parquet"
+  ))
+cleaned_ewf_standings <-
+  read_parquet(here::here("data", "02-analysis_data", "ewf_standings_cleaned.parquet"))
 
 #### Exploratory Data Analysis ####
 # Summary stats
