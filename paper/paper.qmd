@@ -38,7 +38,6 @@ library(here)
 library(bayesplot)
 library(pROC)
 
-
 # Load data
 cleaned_data <- read_parquet(here::here("data/02-analysis_data", "ewf_matches_cleaned.parquet"))
 ewf_appearances <- read_parquet(here::here("data/02-analysis_data", "ewf_appearances_cleaned.parquet"))
@@ -463,6 +462,75 @@ test_data <- cleaned_data[-train_index, ]
 attendance_model <- lm(attendance ~ home_team_id + away_team_id + home_team_score_margin + away_team_score_margin, data = train_data)
 ```
 
+# Survey, Sampling, and Observational Data
+
+## Data Collection Methodology
+
+The data for this study was obtained from the English Women's Football (EWF) Database, which aggregates match-level information from official league sources. The database includes attendance figures, match outcomes, team standings, and player appearances. While the data appears robust, the processes used to collect these data merit closer scrutiny.
+
+- **Attendance Data:**  
+  Attendance figures are typically recorded at match venues by event organizers. This data provides a direct measure of fan engagement but may suffer from inaccuracies due to:
+    - Variability in counting methods (e.g., ticket sales vs. actual turnstile entries).  
+    - Missing data for lower-profile matches.  
+    - Potential underreporting or overreporting during high-demand matches.
+
+- **Performance Metrics:**  
+  Match outcomes and performance data, such as goals scored and conceded, are derived from official match reports. These sources are generally reliable, but the possibility of reporting errors, particularly in historical records, cannot be ignored.
+
+- **Survey Data:**  
+  While this study does not directly use survey data, similar analyses in the literature often rely on surveys to capture fan demographics, motivations, and preferences. Incorporating such surveys into future research could provide richer contextual insights.
+
+## Sampling Considerations
+
+The dataset spans multiple seasons, capturing a range of tiers and divisions. However, it is important to evaluate the representativeness of the data:
+
+- **Temporal Sampling:**  
+  Attendance and performance data are unevenly distributed across seasons, with higher-quality data available in more recent years. Earlier seasons may be underrepresented due to incomplete records.
+
+- **Tier Bias:**  
+  Matches in the Women's Super League (tier 1) are more likely to have complete and reliable data compared to lower-tier matches. This could lead to an overemphasis on top-tier trends, potentially overlooking important dynamics in lower divisions.
+
+- **Event Sampling Bias:**  
+  High-profile matches (e.g., derbies or post-World Cup fixtures) are disproportionately represented in the dataset due to their visibility and reporting completeness. This could skew attendance trends.
+
+## Observational Nature of the Data
+
+The study relies on observational data, which introduces challenges in establishing causal relationships. Key issues include:
+
+- **Confounding Variables:**  
+  Attendance and performance trends may be influenced by unobserved factors such as:
+    - Weather conditions.  
+    - Managerial changes.  
+    - Sponsorship deals.  
+    - Local economic conditions.
+
+- **Reverse Causality:**  
+  While high attendance may boost home team performance, it is also possible that strong teams attract more fans, creating a feedback loop.
+
+## Literature Linkages
+
+The use of attendance as a proxy for fan engagement aligns with previous studies in sports economics. Key references include:
+
+- **Borland and MacDonald (2003):** Discuss the determinants of demand for sport, emphasizing the role of team quality and competitive balance.  
+- **Allan and Roy (2008):** Explore the impact of broadcasting and high-profile events on match attendance in English football.  
+- **García and Rodríguez (2002):** Highlight the spillover effects of international tournaments on domestic leagues.
+
+These studies underscore the validity of incorporating attendance and performance metrics into analyses of league dynamics. However, they also caution against overinterpreting observational data without controlling for potential confounders.
+
+## Recommendations for Future Surveys
+
+To enhance the depth and applicability of findings, future research could incorporate survey data to complement observational records. Key survey themes might include:
+
+- **Fan Demographics:**  
+  Age, gender, income, and regional distribution of attendees.
+
+- **Motivations for Attendance:**  
+  Reasons for attending matches, including loyalty to teams, matchday experience, or interest in specific players.
+
+- **Perceptions of Quality:**  
+  Fan opinions on the competitiveness and entertainment value of matches.
+
+Survey results could be integrated with observational data through techniques like propensity score matching to reduce selection bias.
 
 
 \newpage
