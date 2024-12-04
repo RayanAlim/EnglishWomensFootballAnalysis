@@ -1,52 +1,115 @@
 #### Preamble ####
-# Purpose: Simulates a dataset of Australian electoral divisions, including the 
-  #state and party that won each division.
-# Author: Rohan Alexander
-# Date: 26 September 2024
-# Contact: rohan.alexander@utoronto.ca
+# Purpose: Simulates a dataset of Women's Super League matches, including match attendance, outcomes, and team performances.
+# Author: Rayan Awad Alim
+# Date: 3 December 2024
+# Contact: rayan.alim@mail.utoronto.ca
 # License: MIT
-# Pre-requisites: The `tidyverse` package must be installed
-# Any other information needed? Make sure you are in the `starter_folder` rproj
+# Pre-requisites: Make sure you are in the `EnglishWomensFootballAnalysis` rproj
 
 
 #### Workspace setup ####
+required_packages <- c("tidyverse", "here")
+for (p in required_packages) {
+  if (!require(p, character.only = TRUE)) {
+    install.packages(p, character.only = TRUE)
+  }
+}
+
 library(tidyverse)
-set.seed(853)
+library(here)
+
+set.seed(2024)
 
 
 #### Simulate data ####
-# State names
-states <- c(
-  "New South Wales",
-  "Victoria",
-  "Queensland",
-  "South Australia",
-  "Western Australia",
-  "Tasmania",
-  "Northern Territory",
-  "Australian Capital Territory"
-)
+# Define teams and tiers
+teams <-
+  c("Team A",
+    "Team B",
+    "Team C",
+    "Team D",
+    "Team E",
+    "Team F",
+    "Team G",
+    "Team H")
+tiers <- c("Super League", "Championship")
 
-# Political parties
-parties <- c("Labor", "Liberal", "Greens", "National", "Other")
+# Define probabilities for results and tiers
+result_probs <- c(Home_Win = 0.5,
+                  Away_Win = 0.3,
+                  Draw = 0.2)
+tier_probs <- c(0.7, 0.3)
 
-# Create a dataset by randomly assigning states and parties to divisions
-analysis_data <- tibble(
-  division = paste("Division", 1:151),  # Add "Division" to make it a character
-  state = sample(
-    states,
-    size = 151,
+# Generate simulated match data
+n_matches <- 200
+match_dates <-
+  seq.Date(
+    from = as.Date("2020-01-01"),
+    to = as.Date("2023-12-31"),
+    length.out = n_matches
+  )
+
+simulated_matches <- data.frame(
+  match_id = 1:n_matches,
+  date = sample(match_dates, n_matches, replace = FALSE),
+  home_team = sample(teams, n_matches, replace = TRUE),
+  away_team = sample(teams, n_matches, replace = TRUE),
+  attendance = sample(500:50000, n_matches, replace = TRUE),
+  result = sample(
+    names(result_probs),
+    n_matches,
     replace = TRUE,
-    prob = c(0.25, 0.25, 0.15, 0.1, 0.1, 0.1, 0.025, 0.025) # Rough state population distribution
-  ),
-  party = sample(
-    parties,
-    size = 151,
-    replace = TRUE,
-    prob = c(0.40, 0.40, 0.05, 0.1, 0.05) # Rough party distribution
+    prob = result_probs
   )
 )
 
+# Ensure home_team != away_team
+simulated_matches <- simulated_matches %>%
+  filter(home_team != away_team)
+
+# Generate team appearances
+simulated_appearances <- simulated_matches %>%
+  pivot_longer(
+    cols = c(home_team, away_team),
+    names_to = "team_type",
+    values_to = "team"
+  ) %>%
+  mutate(
+    goals_for = sample(0:5, n(), replace = TRUE),
+    goals_against = sample(0:5, n(), replace = TRUE),
+    tier = sample(tiers, n(), replace = TRUE, prob = tier_probs)
+  )
+
+# Generate standings data
+simulated_standings <- simulated_appearances %>%
+  group_by(team) %>%
+  summarize(
+    points = sum(ifelse(
+      goals_for > goals_against,
+      3,
+      ifelse(goals_for == goals_against, 1, 0)
+    )),
+    goals_scored = sum(goals_for),
+    goals_conceded = sum(goals_against),
+    matches_played = n(),
+    tier = first(tier)
+  ) %>%
+  ungroup()
 
 #### Save data ####
-write_csv(analysis_data, "data/00-simulated_data/simulated_data.csv")
+# Save simulated data
+write.csv(
+  simulated_matches,
+  here::here("data", "00-simulated_data", "simulated_matches.csv"),
+  row.names = FALSE
+)
+write.csv(
+  simulated_appearances,
+  here::here("data", "00-simulated_data", "simulated_appearances.csv"),
+  row.names = FALSE
+)
+write.csv(
+  simulated_standings,
+  here::here("data", "00-simulated_data", "simulated_standings.csv"),
+  row.names = FALSE
+)
