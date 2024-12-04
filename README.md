@@ -41,4 +41,4 @@ The repo is structured as:
 
 ## Statement on LLM usage
 
-LLMs such as ChatGPT were used for minor coding assistance and debugging support. Full usage can be found on `other/llm_usage/usage.txt`.
+LLMs such as ChatGPT were used for minor coding assistance and debugging support. Full usage can be found on `other/llm_usage/usage.txt`. Also, Rstudio's built-in "Code reformat" tool was used to style code.
