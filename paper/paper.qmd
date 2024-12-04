@@ -3,15 +3,14 @@ title: "Exploring Attendance and Performance Trends in Women's Super League"
 subtitle: "An analysis of match attendance, key performance factors, and trends in the English Women's Football"
 author: 
   - Rayan Awad Alim
-thanks: "Code and data are available at: [https://github.com/RayanAlim/EnglishWomensFootballAnalysis]."
-date: today
+thanks: "Code and data are available at: [https://github.com/RayanAlim/EnglishWomensFootballAnalysis/](https://github.com/RayanAlim/EnglishWomensFootballAnalysis)."
+date: December 3, 2024
 date-format: long
 abstract: "This paper analyzes attendance and performance trends in the Women's Super League using data from the English Women's Football (EWF) Database. Using linear and logistic regression models, we identify that match attendance has steadily increased over time, influenced by major international events. Additionally, match attendance correlates with home team success, indicating a measurable 'home advantage.' These insights are crucial for improving team strategies, optimizing league operations, and enhancing fan engagement."
 format: pdf
 number-sections: true
 bibliography: references.bib
 ---
-
 ```{r}
 #| include: false
 #| warning: false
@@ -48,7 +47,6 @@ attendance_model <- readRDS(here::here("models", "attendance_model.rds"))
 outcome_model <- readRDS(here::here("models", "outcome_model.rds"))
 team_performance_model <- readRDS(here::here("models", "team_performance_model.rds"))
 ```
-
 # Introduction
 
 The Women's Super League (WSL) has seen significant growth since its inception, both in terms of attendance and popularity. This paper aims to explore trends in WSL attendance and identify key performance factors that determine match outcomes, using the English Women's Football (EWF) Database. Understanding these trends is essential for teams, analysts, and league organizers seeking to enhance fan engagement and improve team performance.
@@ -59,22 +57,22 @@ The analysis finds that attendance has generally increased over time, with certa
 
 This research matters because it helps identify the factors that contribute to successful outcomes in women’s football, providing valuable information for teams to improve strategies, for organizers to boost engagement, and for analysts interested in understanding sports dynamics. These findings are particularly significant as women's sports experience unprecedented growth globally, with leagues and federations seeking sustainable ways to attract and retain audiences. This study contributes to the growing body of literature that underscores the economic and cultural value of women's football.
 
-The remainder of this paper is structured as follows: Section @sec-data discusses the data sources and cleaning processes. Section @sec-model outlines the model used to evaluate match outcomes. Section @sec-results presents the key findings from the data analysis, and Section @sec-discussion provides a summary of what we have learned and suggests potential areas for future research.
+The remainder of this paper is structured as follows: The Data @sec-data discusses the data sources and cleaning processes. The Model @sec-model outlines the model used to evaluate match outcomes. The Results @sec-results presents the key findings from the data analysis, and the Discussion @sec-discussion provides a summary of what we have learned and suggests potential areas for future research.
 
 
 # Data {#sec-data}
 
 ## Overview
 
-We use the statistical programming language R [@citeR] to perform our analysis. Our data is derived from the English Women's Football (@EWF) Database, which provides a comprehensive dataset of matches, team appearances, and standings in the Women's Super League and Women's Championship. Following the guidance provided by @tellingstories, we consider how best to prepare and use these data for analysis in order to effectively tell a story of attendance and performance trends.
+We use the statistical programming language R [@citeR] to perform our analysis. Our data is derived from the English Women's Football (@EWF) Database, which provides a comprehensive dataset of matches, team appearances, and standings in the Women's Super League and Women's Championship. Following the guidance provided by @tellingstories, we consider how best to prepare and use these data for analysis in order to effectively tell a story of attendance and performance trends. The analysis was conducted using the statistical programming language R [@citeR] and several libraries, including `tidyverse` [@tidyverse], `janitor` [@janitor], `knitr` [@knitr], `dplyr` [@dplyr], `arrow` [@arrow], and `here` [@here] for data manipulation, as well as `ggplot2` [@ggplot], and `kableExtra` [@kableExtra] for visualization.
 
-This study utilizes three main datasets from the EWF Database:
+This study utilizes three main datasets from the English Women's Football (EWF) Database [@EWF]:
 
-`ewf_matches`: Contains all matches played with details like attendance, score, and outcomes.
+1. *ewf_matches*: Contains all matches played with details like attendance, score, and outcomes.
 
-`ewf_appearances`: Contains information about team appearances in each match.
+2. *ewf_appearances*: Contains information about team appearances in each match.
 
-`ewf_standings`: Contains end-of-season standings for each team.
+3. *ewf_standings*: Contains end-of-season standings for each team.
 
 ## Measurement
 	
@@ -118,9 +116,7 @@ While there are other datasets that track women's football, such as those from F
 
 ### Attendance
 
-The attendance variable captures the number of spectators present at each match, serving as a proxy for fan engagement and the overall popularity of the Women's Super League. Analyzing attendance trends not only provides insights into the growth trajectory of women's football but also highlights key moments that have driven fan interest. Figure @fig-attendance-over-time illustrates the evolution of attendance over time, uncovering critical shifts and patterns in audience behavior.
-
-The attendance data reveals notable spikes during certain seasons, often corresponding with major international tournaments or high-profile matches. For instance, attendance saw a significant increase following the FIFA Women's World Cup, indicating a spillover effect where global events bolster domestic league interest. This suggests that leveraging international exposure through strategic marketing and scheduling can have a profound impact on league engagement.
+The attendance variable captures the number of spectators present at each match, serving as a proxy for fan engagement and the overall popularity of the Women's Super League. Analyzing attendance trends not only provides insights into the growth trajectory of women's football but also highlights key moments that have driven fan interest. Figure @fig-attendance-over-time illustrates the evolution of attendance over time, uncovering critical shifts and spikes in audience behavior, we can see from @fig-attendance-distribution and @tbl-attendance-summary that attendance is most around the 1000-2000 atendees range. The notable spikes during certain seasons, often corresponding with major international tournaments or high-profile matches. For instance, attendance saw a significant increase following the FIFA Women's World Cup, indicating a spillover effect where global events bolster domestic league interest. This suggests that leveraging international exposure through strategic marketing and scheduling can have a profound impact on league engagement. @tbl-attendance-summary shows the summary of attendance. 
 
 ```{r}
 #| echo: false
@@ -130,7 +126,6 @@ The attendance data reveals notable spikes during certain seasons, often corresp
 #| label: tbl-attendance-summary
 #| tbl-cap: "Summary statistics of match attendance in Women's Super League."
 
-# Summarizing attendance data
 attendance_summary <- cleaned_data %>%
   summarise(
     Total_Matches = n(),
@@ -140,7 +135,10 @@ attendance_summary <- cleaned_data %>%
     Min_Attendance = min(attendance, na.rm = TRUE)
   )
 
-attendance_summary
+knitr::kable(
+  attendance_summary,
+  caption = "Summary statistics of match attendance in the Women's Super League"
+)
 ```
 
 ```{r}
@@ -148,23 +146,9 @@ attendance_summary
 #| eval: true
 #| warning: false
 #| message: false
-cleaned_data %>%
-  ggplot(aes(x = attendance)) +
-  geom_histogram(binwidth = 500, fill = "skyblue", color = "black") +
-  labs(
-    title = "Distribution of Match Attendance",
-    x = "Attendance",
-    y = "Frequency"
-  ) +
-  theme_minimal()
-```
+#| label: fig-attendance-over-time
+#| fig-cap:  "The trend in match attendance over time in the Women's Super League has increased overall with notable spikes often corresponding with major international tournaments or high-profile matches"
 
-```{r}
-#| echo: false
-#| eval: true
-#| warning: false
-#| message: false
-# Time series plot for attendance over time
 cleaned_data %>%
   filter(!is.na(attendance)) %>%
   ggplot(aes(x = as.Date(date), y = attendance)) +
@@ -174,8 +158,31 @@ cleaned_data %>%
     x = "Date",
     y = "Attendance"
   ) +
-  theme_minimal()
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
 ```
+
+```{r}
+#| echo: false
+#| eval: true
+#| warning: false
+#| message: false
+#| label: fig-attendance-distribution
+#| fig-cap: "Histogram showing the distribution of match attendance in the Women's Super League."
+
+cleaned_data %>%
+  ggplot(aes(x = attendance)) +
+  geom_histogram(binwidth = 500, fill = "skyblue", color = "black") +
+  labs(
+    title = "Distribution of Match Attendance",
+    x = "Attendance",
+    y = "Frequency"
+  ) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+
 ```{r}
 #| echo: false
 #| eval: true
@@ -190,29 +197,38 @@ ewf_standings %>%
     x = "Goals Scored",
     y = "Points"
   ) +
-  theme_minimal()
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
 ```
 
 ### Match Outcomes
 
-The match outcomes variable is a categorical outcome representing whether the home team won, the away team won, or if the match ended in a draw. This outcome helps to assess the impact of various predictors, such as attendance, on the likelihood of different results.
+The match outcomes variable is a categorical outcome representing whether the home team won, the away team won, or if the match ended in a draw. This outcome helps to assess the impact of various predictors, such as attendance, on the likelihood of different results. As shown in Figure @fig-attendance-by-outcome, the distribution of match attendance varies slightly across match outcomes. This plot excludes outliers and focuses on typical audience sizes, providing a clearer comparison between Home Wins, Away Wins, and Draws. @tbl-match-outcomes-summary summarizes the average attendance and total matches for each match outcome in the Women's Super League, showing that there games where home team won, had more audience. 
+
 
 ```{r}
 #| echo: false
 #| eval: true
 #| warning: false
 #| message: false
-# Box plot for attendance by match outcome
-cleaned_data %>%
+#| label: fig-attendance-by-outcome
+#| fig-cap: "Violin plot illustrating the distribution of match attendance categorized by match outcomes (Home Win, Away Win, Draw) in the Women's Super League. Outliers are excluded to focus on typical audience sizes."
+
+attendance_filtered <- cleaned_data %>%
   filter(!is.na(attendance), !is.na(result)) %>%
+  filter(attendance <= quantile(attendance, 0.95, na.rm = TRUE)) # Remove top 5% extreme values
+
+# Create violin plot
+attendance_filtered %>%
   ggplot(aes(x = result, y = attendance, fill = result)) +
-  geom_boxplot() +
+  geom_violin(trim = TRUE) +
   labs(
-    title = "Attendance by Match Outcome",
+    title = "Attendance by Match Outcome (Without Outliers)",
     x = "Match Outcome",
     y = "Attendance"
   ) +
-  theme_minimal()
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5)) 
 ```
 
 ```{r}
@@ -223,8 +239,6 @@ cleaned_data %>%
 #| warning: false
 #| message: false
 
-
-# Summarizing match outcomes
 match_outcome_summary <- cleaned_data %>%
   group_by(result) %>%
   summarise(
@@ -232,19 +246,21 @@ match_outcome_summary <- cleaned_data %>%
     total_matches = n()
   )
 
-match_outcome_summary
+knitr::kable(
+  match_outcome_summary,
+  caption = "Summary statistics for match outcomes by attendance and other predictors.",
+  col.names = c("Match Outcome", "Average Attendance", "Total Matches")
+)
 ```
 # Model {#sec-model}
 
-## Predictor variables
+The goal of our modeling strategy is to understand how match characteristics affect both attendance and match outcomes. We employ two types of regression models:
 
-This section discusses the predictor variables used in the models. These predictors are integral to understanding the drivers of attendance and match outcomes in the Women's Super League.
+1. Linear Regression to Predict Match Attendance.
 
-1. Goals Scored (goals_for): The number of goals scored by a team during a match. Goals are key indicators of team performance and are directly related to the likelihood of winning a match.
+2. Logistic Regression to Predict Match Outcomes (Home Win Probability).
 
-2. Goals Against (goals_against): The number of goals conceded by a team. Fewer goals conceded generally indicates a stronger defense and contributes to better match outcomes.
-
-3. Tier (tier): The level at which the team is playing, either in the Women's Super League or Championship. Teams at different tiers may show varied performance due to differences in competitiveness.
+These models allow us to quantify the impact of factors such as goals scored, goals conceded, and attendance on match success and fan engagement. We also run the models in R [@citeR] using the `rstanarm` package of [@rstanarm]. We use the default priors from `rstanarm`. 
 
 ```{r}
 #| label: fig-predictor-distribution
@@ -254,7 +270,6 @@ This section discusses the predictor variables used in the models. These predict
 #| warning: false
 #| message: false
 
-# Load correct dataset for predictor variables
 predictor_data <- read_parquet(here::here("data", "02-analysis_data", "ewf_appearances_cleaned.parquet"))
 
 # Plotting distribution of goals scored by tier
@@ -262,20 +277,26 @@ predictor_plot <- predictor_data %>%
   filter(!is.na(goals_for), !is.na(tier)) %>%
   ggplot(aes(x = goals_for, fill = as.factor(tier))) +
   geom_histogram(binwidth = 1, alpha = 0.7, position = "dodge", color = "black") +
-  labs(title = "Distribution of Goals Scored by Tier", x = "Goals Scored", y = "Frequency") +
-  theme_minimal()
+  labs(title = "Distribution of Goals Scored by Tier",
+       x = "Goals Scored", 
+       y = "Frequency",
+       fill = "Tier") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
 
 predictor_plot
 ```
 
+## Predictor variables
 
-# Model{#sec-model}
+This section discusses the predictor variables used in the models. These predictors are integral to understanding the drivers of attendance and match outcomes in the Women's Super League.
 
-The goal of our modeling strategy is to understand how match characteristics affect both attendance and match outcomes. We employ two types of regression models:
-1. Linear Regression to Predict Match Attendance.
-2. Logistic Regression to Predict Match Outcomes (Home Win Probability).
+1. **Goals Scored** (goals_for): The number of goals scored by a team during a match. Goals are key indicators of team performance and are directly related to the likelihood of winning a match.
 
-These models allow us to quantify the impact of factors such as goals scored, goals conceded, and attendance on match success and fan engagement.We run the models in R [@citeR] using the rstanarm package of @rstanarm. We use the default priors from `rstanarm`. 
+2. **Goals Against** (goals_against): The number of goals conceded by a team. Fewer goals conceded generally indicates a stronger defense and contributes to better match outcomes.
+
+3. **Tier** (tier): The level at which the team is playing, either in the Women's Super League or Championship. Teams at different tiers may show varied performance due to differences in competitiveness.
+
 
 ## Model set-up
 
@@ -283,19 +304,26 @@ These models allow us to quantify the impact of factors such as goals scored, go
 
 The first model aims to predict match attendance based on several key variables. We use a linear regression model where attendance is the response variable and predictors include both home and away teams, as well as the score margins.
 
-Let $Y_i$ represent the match attendance for match $i$. The linear regression model is represented as:
+
+The first model aims to predict match attendance based on several key variables. We use a linear regression model where attendance is the response variable, and predictors include both home and away teams, as well as the score margins.
+
+Let $Y_i$ represent the match attendance for match $i$ The linear regression model is represented as:
+
+$$
+Y_i = \beta_0 + \beta_1 X_{home\_team\_i} + \beta_2 X_{away\_team\_i} + \beta_3 X_{home\_team\_score\_margin\_i} + \beta_4 X_{away\_team\_score\_margin\_i} + \epsilon_i
+$$
 
 Where:
 
-$Y_i$: Match attendance for match $i$
+- $Y_i$: Match attendance for match $i$
 
-$\beta_0$: Intercept term
+- $\beta_0$: Intercept term
 
-$X_{home_team_i}$, $X_{away_team_i}$: Categorical variables representing the home and away teams
+- $X_{home_team_i}$, $X_{away_team_i}$: Categorical variables representing the home and away teams
 
-$X_{home_team_score_margin_i}$, $X_{away_team_score_margin_i}$: Score margins for the home and away teams in match $i$
+- $X_{home_team_score_margin_i}$, $X_{away_team_score_margin_i}$: Score margins for the home and away teams in match $i$
 
-$\epsilon_i$: Error term, assumed to be normally distributed with mean 0
+- $\epsilon_i$: Error term, assumed to be normally distributed with mean 0
 
 This model captures how the identity of the teams playing and the competitive nature of the match (score margins) influence attendance.
 
@@ -305,19 +333,22 @@ The analysis reveals that factors such as the teams playing and the score margin
 
 The second model is a logistic regression model designed to predict the likelihood of a home win. This model uses attendance, score margins, and tier (league level) as predictor variables.
 
-Let $p_i$ be the probability that the home team wins match $i$. The logistic regression model is given by:
+Let \( p_i \) be the probability that the home team wins match \( i \). The logistic regression model is given by:
 
+$$
+\log \left( \frac{p_i}{1 - p_i} \right) = \alpha + \beta_1 X_{attendance_i} + \beta_2 X_{tier_i} + \beta_3 X_{home\_team\_score\_margin\_i} + \beta_4 X_{away\_team\_score\_margin\_i}
+$$
 Where:
 
-$p_i$: Probability of a home win for match $i$
+- $p_i$: Probability of a home win for match $i$
 
-$\alpha$: Intercept term
+- $\alpha$: Intercept term
 
-$X_{attendance_i}$: Attendance for match $i$
+- $X_{attendance_i}$: Attendance for match $i$
 
-$X_{tier_i}$: Tier level of the teams
+- $X_{tier_i}$: Tier level of the teams
 
-$X_{home_team_score_margin_i}$, $X_{away_team_score_margin_i}$: Score margins for home and away teams in match $i$
+- $X_{home_team_score_margin_i}$, $X_{away_team_score_margin_i}$: Score margins for home and away teams in match $i$
 
 The logistic regression results show that higher attendance significantly increases the probability of a home team victory, suggesting the influence of crowd support. Furthermore, the score margins for both teams are critical factors in determining match outcomes.
 
@@ -327,34 +358,36 @@ The third model is a linear regression model aimed at predicting team points bas
 
 Mathematical Representation
 
-Let $P_i$ represent the total points earned by team $i$ over a season. The model is defined as follows:
+Let \( P_i \) represent the total points earned by team \( i \) over a season. The model is defined as follows:
+
+$$
+P_i = \gamma_0 + \gamma_1 X_{goals\_for\_i} + \gamma_2 X_{goals\_against\_i} + \gamma_3 X_{tier\_i} + \epsilon_i
+$$
 
 Where:
 
-$P_i$: Total points earned by team $i$
+- $P_i$: Total points earned by team $i$
 
-$\gamma_0$: Intercept term
+- $\gamma_0$: Intercept term
 
-$X_{goals_for_i}$: Goals scored by team $i$
+- $X_{goals_for_i}$: Goals scored by team $i$
 
-$X_{goals_against_i}$: Goals conceded by team $i$
+- $X_{goals_against_i}$: Goals conceded by team $i$
 
-$X_{tier_i}$: Tier level for team $i$
+- $X_{tier_i}$: Tier level for team $i$
 
-$\epsilon_i$: Error term, assumed to be normally distributed with mean 0
+- $\epsilon_i$: Error term, assumed to be normally distributed with mean 0
 
 The results indicate that scoring more goals positively impacts the number of points earned, whereas conceding goals has a negative effect. The tier variable also shows a significant effect, with teams in higher tiers performing differently compared to those in lower ones.
 
 
 ### Model justification
 
-The models chosen are well-suited for the goals of the analysis:
-
-Linear regression for attendance and team points provides a straightforward method to determine the relationship between several continuous and categorical predictors and the response variables.
+The models chosen are well-suited for the goals of the analysis as linear regression for attendance and team points provides a straightforward method to determine the relationship between several continuous and categorical predictors and the response variables.
 
 Logistic regression for match outcomes appropriately models a binary response variable, allowing us to estimate the probability of a specific result (home win).
 
-The inclusion of variables such as attendance, score margins, and tier helps capture the essential dynamics influencing match outcomes and team success. Including these features reflects the aspects discussed in the data section, where attendance serves as a proxy for crowd support, and score margins indicate competitive balance. While logistic regression was ultimately chosen for predicting match outcomes, alternative methods such as Poisson regression were explored for their suitability in modeling count-based phenomena like goals scored. However, logistic regression was preferred for its interpretability and alignment with binary outcomes.
+The inclusion of variables such as attendance, score margins, and tier helps capture the essential dynamics influencing match outcomes and team success. Including these features reflects the aspects discussed in the data section, where attendance serves as a proxy for crowd support, and score margins indicate competitive balance. While logistic regression was ultimately chosen for predicting match outcomes, alternative methods such as Poisson regression explored for their suitability in modeling count-based phenomena like goals scored. However, logistic regression was better for its interpretability and alignment with binary outcomes.
 
 #### Assumptions and Limitations
 
@@ -376,15 +409,15 @@ The inclusion of variables such as attendance, score margins, and tier helps cap
 
 The key results from the predictive models are summarized below:
 
-Match Attendance: Match attendance is positively influenced by popular teams and close score margins.
+- *Match Attendance*: Match attendance is positively influenced by popular teams and close score margins.
 
-Match Outcomes: Higher attendance is associated with an increased likelihood of a home win, indicating a potential "home advantage" driven by crowd support.
+- *Match Outcomes*: Higher attendance is associated with an increased likelihood of a home win, indicating a potential "home advantage" driven by crowd support.
 
-Team Performance: Goals scored have a positive impact on points earned, while goals conceded have a negative impact. The tier of competition also affects overall team performance.
+- *Team Performance*: Goals scored have a positive impact on points earned, while goals conceded have a negative impact. The tier of competition also affects overall team performance.
 
 These findings are useful for team managers and league organizers in developing strategies to enhance both team performance and fan engagement.
 
-# Discussion
+# Discussion {#sec-discussion}
 
 ## Understanding the Factors that Drive Match Attendance {#sec-first-point}
 
@@ -392,21 +425,23 @@ This paper explores factors influencing match attendance and performance in the 
 
 The correlation between attendance and home team success suggests that fan presence can impact match outcomes, likely by providing a motivational boost to players. The findings here indicate that increasing audience engagement could have tangible benefits for home team performance.
 
-## The Relationship Between Goals and Team Success
+## Both offensive and defensive abilities are crucial for a team's performance
 
-Another key observation is the direct impact of goals scored and goals conceded on team standings. Goals scored positively affect match outcomes, as expected, while goals conceded correlate negatively with team success. These results confirm the intuitive idea that both offensive and defensive abilities are crucial for a team's performance. It is not enough to simply score goals—preventing the opponent from scoring also plays an important role.
+Another key observation is the direct impact of goals scored and goals conceded on team standings. Goals scored positively affect match outcomes, as expected, while goals conceded correlate negatively with team success. These results confirm the intuitive idea that both offensive and defensive abilities are crucial for a team's performance. It is not enough to simply score goals-preventing the opponent from scoring also plays an important role.
+
+## Home-Field Advantage: Larger crowds positively correlated with wins at Home turf
 
 Moreover, the analysis of attendance reveals that larger crowds tend to coincide with better performances for the home team. This finding highlights the potential advantage that crowd support can provide, supporting the concept of "home-field advantage" in sports.
 
 ## Implications for Teams and Organizers
 
-The results suggest that teams should focus on improving both offensive capabilities and defensive solidity to succeed. Beyond game tactics, teams and league organizers should continue to work on increasing fan attendance, as the presence of spectators has a clear impact on home team success. This can be achieved through better marketing, improved game day experiences, and leveraging international events to draw in larger audiences.
+The results also suggest that teams should focus on improving both offensive capabilities and defensive solidity to succeed. Beyond game tactics, teams and league organizers should continue to work on increasing fan attendance, as the presence of spectators has a clear impact on home team success. This can be achieved through better marketing, improved game day experiences, and leveraging international events to draw in larger audiences.
 
 For organizers, these insights are valuable for shaping promotional strategies that increase attendance, leveraging key calendar events, and enhancing audience experience, thereby boosting overall league engagement and team performance.
 
 ## Weaknesses and Next Steps {#sec-weaknesses}
 
-There are several limitations in the current study that should be addressed in future research. Firstly, the dataset used only spans a certain period, which may limit the generalizability of these results. Extending the analysis to include more seasons would provide a better understanding of longer-term trends.
+There are several limitations in the current study that should be addressed in future research. Firstly, the dataset used only spans from 2011-2018, which limitits the generalizability of these results. Extending the analysis to include more seasons would provide a better understanding of longer-term trends.
 
 Another limitation is the absence of player-specific performance metrics. Incorporating individual-level data, such as player fatigue or injuries, would add depth to our understanding of what drives match outcomes. Future models could incorporate additional predictors to improve predictive power and capture the complex dynamics of match performance.
 
@@ -417,50 +452,6 @@ Further research should also consider qualitative factors like weather condition
 \appendix
 
 # Appendix {-}
-
-## Additional Data Details
-
-The English Women's Football (EWF) Database provided detailed match, attendance, and standings data. This database includes metrics such as match outcomes, goals for and against, attendance, and standings, which were all used in the analysis. Data cleaning and filtering steps were performed to ensure consistency and reliability in the findings presented.
-
-## Model Details {#sec-model-details}
-
-### Posterior Predictive Check
-
-In @fig-ppcheckandposteriorvsprior, we implement a posterior predictive check to evaluate how well the model fits the data. This helps to determine if the model is appropriately capturing the patterns in the observed data. 
-
-In @fig-ppcheckandposteriorvsprior, we compare the posterior distributions with the prior distributions. The comparison shows how the data has influenced the model’s parameters, providing insight into the extent to which our priors were updated by the observed data.
-
-
-```
-
-
-
-#Assumption Checks
-```{r}
-#| echo: false
-#| eval: true
-#| warning: false
-#| message: false
-# Residual vs Fitted values
-plot(attendance_model, which = 1)
-
-# Q-Q plot for normality of residuals
-plot(attendance_model, which = 2)
-```
-
-#Model Validation
-```{r}
-#| echo: false
-#| eval: true
-#| warning: false
-#| message: false
-set.seed(2024)
-train_index <- createDataPartition(cleaned_data$attendance, p = 0.8, list = FALSE)
-train_data <- cleaned_data[train_index, ]
-test_data <- cleaned_data[-train_index, ]
-
-attendance_model <- lm(attendance ~ home_team_id + away_team_id + home_team_score_margin + away_team_score_margin, data = train_data)
-```
 
 # Survey, Sampling, and Observational Data
 
@@ -531,6 +522,115 @@ To enhance the depth and applicability of findings, future research could incorp
   Fan opinions on the competitiveness and entertainment value of matches.
 
 Survey results could be integrated with observational data through techniques like propensity score matching to reduce selection bias.
+
+
+# Additional Data Details
+
+The English Women's Football (EWF) Database provided detailed match, attendance, and standings data. This database includes metrics such as match outcomes, goals for and against, attendance, and standings, which were all used in the analysis. Data cleaning and filtering steps were performed to ensure consistency and reliability in the findings presented.
+
+## Model Details and Validation {#sec-model-details}
+
+### Posterior Predictive Check
+A posterior predictive check was conducted to evaluate the extent to which the model captures the patterns in the observed data. In @fig-ppcheckandposteriorvsprior, the observed data is compared against replicated datasets generated from the posterior distribution of the model parameters. This diagnostic provides insights into areas where the model may underfit or overfit the data.
+
+Additionally, a comparison of posterior distributions with prior distributions is included. This comparison highlights how the data has influenced the model’s parameters, illustrating the extent to which prior beliefs have been updated by observed evidence.
+
+```{r}
+#| echo: false
+#| eval: true
+#| warning: false
+#| message: false
+#| label: fig-ppcheckandposteriorvsprior
+
+# Posterior predictive check
+# pp_check(attendance_model_data, fun = "hist")
+```
+
+### Assumption Checks
+Diagnostic plots were generated to check for the assumptions of linear regression, @fig-Assumption including:
+
+**Residuals vs. Fitted Values:**
+- This plot checks the linearity assumption by examining whether residuals have constant variance and are centered around zero.
+
+**Q-Q Plot for Normality:**
+- This plot assesses whether residuals are normally distributed, a critical assumption for inference in linear regression models.
+
+
+```{r}
+#| echo: false
+#| eval: true
+#| warning: false
+#| message: false
+#| label: fig-Assumption
+# Residual vs Fitted values
+plot(attendance_model, which = 1)
+
+# Q-Q plot for normality of residuals
+plot(attendance_model, which = 2)
+```
+
+### Model Validation
+
+The dataset was split into training (80%) and testing (20%) sets to validate the model's performance on unseen data. This approach ensures that the model generalizes well and is not overfitted to the training data, see @tbl-model-validation.
+
+1. **Train-Test Split:**
+
+- Training data: Used to fit the model.
+- Testing data: Used to evaluate the model's predictive accuracy.
+
+2. **Performance Metrics:**
+
+- Root Mean Squared Error (RMSE): Measures the average prediction error in the same units as the response variable (attendance).
+- Mean Absolute Error (MAE): Captures the average absolute prediction error.
+- R-Squared ($R^2$) Indicates the proportion of variance in attendance explained by the predictors.
+
+```{r}
+#| echo: false
+#| eval: true
+#| warning: false
+#| message: false
+#| label: tbl-model-validation
+# Train-test split
+set.seed(2024)
+train_index <- createDataPartition(cleaned_data$attendance, p = 0.8, list = FALSE)
+train_data <- cleaned_data[train_index, ]
+test_data <- cleaned_data[-train_index, ]
+
+# Model fitting
+attendance_model <- lm(attendance ~ home_team_id + away_team_id + home_team_score_margin + away_team_score_margin, data = train_data)
+
+# Predictions on test data
+predictions <- predict(attendance_model, newdata = test_data)
+
+# Performance metrics
+rmse <- sqrt(mean((predictions - test_data$attendance)^2, na.rm = TRUE))
+mae <- mean(abs(predictions - test_data$attendance), na.rm = TRUE)
+r_squared <- summary(attendance_model)$r.squared
+
+metrics <- data.frame(
+  Metric = c("Root Mean Squared Error (RMSE)", 
+             "Mean Absolute Error (MAE)", 
+             "R-Squared (R2)"),
+  Value = c(rmse, mae, r_squared)
+)
+
+# Display the table
+knitr::kable(
+  metrics,
+  caption = "Performance metrics for the linear model predicting attendance."
+)
+```
+### Residual Analysis:
+- Residuals plotted against each predictor to identify non-linear relationships or heteroscedasticity.
+
+```{r}
+#| echo: false
+#| eval: true
+#| warning: false
+#| message: false
+par(mfrow = c(2, 2))
+plot(attendance_model)
+```
 
 
 \newpage
