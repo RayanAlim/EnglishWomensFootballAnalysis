@@ -3,12 +3,13 @@ title: "Exploring Attendance and Performance Trends in Women's Super League"
 subtitle: "An analysis of match attendance, key performance factors, and trends in the English Women's Football"
 author: 
   - Rayan Awad Alim
-thanks: "Code and data are available at: [https://github.com/RayanAlim/EnglishWomensFootballAnalysis/](https://github.com/RayanAlim/EnglishWomensFootballAnalysis)."
+thanks: "Code and data are available at: [github.com/RayanAlim/EnglishWomensFootballAnalysis/](https://github.com/RayanAlim/EnglishWomensFootballAnalysis)."
 date: December 3, 2024
 date-format: long
-abstract: "This paper analyzes attendance and performance trends in the Women's Super League using data from the English Women's Football (EWF) Database. Using linear and logistic regression models, we identify that match attendance has steadily increased over time, influenced by major international events. Additionally, match attendance correlates with home team success, indicating a measurable 'home advantage.' These insights are crucial for improving team strategies, optimizing league operations, and enhancing fan engagement."
+abstract: "This paper analyzes attendance and performance trends in the Women’s Super League (WSL) using data from the English Women's Football (EWF) Database. We examine the evolution of attendance over time and evaluate how key factors—such as goals scored, goals conceded, and league tier—influence both match-level outcomes and season-level team performance. Using regression modeling, we find that match attendance has grown substantially, correlating with higher probabilities of home-team success, suggesting a measurable 'home advantage.' These insights provide actionable information for enhancing fan engagement strategies and guiding team development, especially as the intrest in womens sports increases globally."
 format: pdf
 number-sections: true
+toc: true
 bibliography: references.bib
 ---
 ```{r}
@@ -49,74 +50,83 @@ team_performance_model <- readRDS(here::here("models", "team_performance_model.r
 ```
 # Introduction
 
-The Women's Super League (WSL) has seen significant growth since its inception, both in terms of attendance and popularity. This paper aims to explore trends in WSL attendance and identify key performance factors that determine match outcomes, using the English Women's Football (EWF) Database. Understanding these trends is essential for teams, analysts, and league organizers seeking to enhance fan engagement and improve team performance.
+Women’s professional football in England (and globally) has experienced substantial growth in recent years, notably reflected in the Women’s Super League (WSL). Increased media coverage, enhanced professionalism, and international success of national teams have all contributed to rising attendance and interest @vanEekeren2022 @Kitching2022. Understanding the determinants of match attendance and performance outcomes is valuable for clubs, team analysts, league organizers, and stakeholders seeking to enhance fan engagement, team performances and competitive standards as demonstrated by @GarciaRodriguez2002, attendance determinants can be significantly influenced by local factors.
 
-The estimand of this study is to determine how factors like attendance, team strength, and historical performance affect match outcomes in the Women's Super League. By quantifying these relationships, we aim to provide insights into what drives successful match results and how attendance figures have evolved over time.
+This paper explores two central themes: the evolution of match attendance over time and the relationship between key performance indicators (e.g., goals scored, goals conceded) and both match-level outcomes (win, draw, loss) and season-level performance (final standings, points accrued). Using the English Women’s Football (EWF) Database(@EWF)- a historical record of top-tier and second-tier women’s football in England- we analyze how attendance trends correlate with on-field results and whether home teams benefit from larger crowds.
 
-The analysis finds that attendance has generally increased over time, with certain key events serving as catalysts for spikes in crowd size. Additionally, higher attendance is correlated with an increased likelihood of home team success, suggesting a potential impact of crowd support on team performance.
+The estimand is to understand how factors like attendance, goals, and tier level influence match results and team points. Our findings reveal that attendance has steadily increased, especially around peak events and growth phases of the league. Higher attendance correlates with a greater likelihood of home-team success, suggesting a measurable “home advantage.” Additionally, goals scored and conceded are strong predictors of a team’s season-long performance. The analysis also finds that attendance has generally increased over time, with certain key events serving as catalysts for spikes in crowd size.
 
-This research matters because it helps identify the factors that contribute to successful outcomes in women’s football, providing valuable information for teams to improve strategies, for organizers to boost engagement, and for analysts interested in understanding sports dynamics. These findings are particularly significant as women's sports experience unprecedented growth globally, with leagues and federations seeking sustainable ways to attract and retain audiences. This study contributes to the growing body of literature that underscores the economic and cultural value of women's football.
+This research matters because it provides insights into what drives successful outcomes and robust fan engagement in women’s football. It informs strategic decision-making for clubs aiming to improve both their on-field performances and the experiences they offer to supporters, for organizers to boost engagement, and for analysts interested in understanding sports dynamics. More broadly, these findings are particularly significant as women's sports experience unprecedented growth globally,this study contributes to the growing body of literature that underscores the economic and cultural value of women's football where robust data-driven evidence can shape policy, marketing, and development strategies.
 
 The remainder of this paper is structured as follows: The Data @sec-data discusses the data sources and cleaning processes. The Model @sec-model outlines the model used to evaluate match outcomes. The Results @sec-results presents the key findings from the data analysis, and the Discussion @sec-discussion provides a summary of what we have learned and suggests potential areas for future research.
 
-
 # Data {#sec-data}
-
-## Overview
-
-We use the statistical programming language R [@citeR] to perform our analysis. Our data is derived from the English Women's Football (@EWF) Database, which provides a comprehensive dataset of matches, team appearances, and standings in the Women's Super League and Women's Championship. Following the guidance provided by @tellingstories, we consider how best to prepare and use these data for analysis in order to effectively tell a story of attendance and performance trends. The analysis was conducted using the statistical programming language R [@citeR] and several libraries, including `tidyverse` [@tidyverse], `janitor` [@janitor], `knitr` [@knitr], `dplyr` [@dplyr], `arrow` [@arrow], and `here` [@here] for data manipulation, as well as `ggplot2` [@ggplot], and `kableExtra` [@kableExtra] for visualization.
-
-This study utilizes three main datasets from the English Women's Football (EWF) Database [@EWF]:
-
-1. *ewf_matches*: Contains all matches played with details like attendance, score, and outcomes.
-
-2. *ewf_appearances*: Contains information about team appearances in each match.
-
-3. *ewf_standings*: Contains end-of-season standings for each team.
-
-## Measurement
-	
-The process of measurement involves translating real-world events into structured data entries. In the context of our analysis, this means taking observable phenomena such as the attendance of a football match, the outcome of a game, and individual team performances and converting them into numerical or categorical data points.
-
-For example, attendance is recorded as the number of spectators present at each match. This variable captures the level of audience engagement and is an indicator of the popularity of the match. Attendance figures are sourced from official league records, ensuring reliability. However, missing values in the attendance data required filtering to maintain consistency in the analysis.
-
-Similarly, match outcomes are recorded as categorical variables, with values such as “Home Win,” “Away Win,” and “Draw.” These categories are derived directly from match results and are used to evaluate performance trends. This structured approach allows us to quantify and model the likelihood of different outcomes based on a variety of predictors.
-
-The team standings data, recorded at the end of each season, includes metrics such as points earned, goals scored, and final league position. These measurements help to contextualize team performances over multiple seasons and allow for comparative analysis between teams and over time.
 
 ## Dataset Context and Variable Overview
 
-The EWF Database offers extensive historical data on women's football in England. The dataset includes records spanning multiple seasons of the Women's Super League, capturing key variables such as attendance, team results, player appearances, and seasonal standings. By analyzing these variables, we can better understand the factors driving attendance, match outcomes, and overall team performance in the league.
+Our data is derived from the English Women's Football (@EWF) Database, which provides a detailed dataset of matches, team appearances, and standings in the Women's Super League(tier-1) and Women's Championship(tier-2) in England. The dataset includes records spanning multiple seasons, capturing key variables such as attendance, team results, player appearances, and seasonal standings. By analyzing these variables, we can better understand the factors driving attendance, match outcomes, and overall team performance in the league.Following the guidance provided by @tellingstories, we considered how best to prepare and use this data for analysis in order to effectively tell a story of attendance and performance trends. The analysis was conducted using the statistical programming language R [@citeR] and several libraries, including `tidyverse` [@tidyverse], `ggplot2` [@ggplot], `knitr` [@knitr], `arrow` [@arrow], and `here` [@here] for data manipulation and visualization, as well as  `janitor` [@janitor] and `kableExtra` [@kableExtra] for data cleanaing and presentation. 
 
-While there are other datasets that track women's football, such as those from FIFA or Opta, the EWF dataset was selected due to its specific focus on English domestic competitions and its detailed match-level information. Other datasets either lacked granularity or were not publicly accessible, making the EWF dataset the most suitable for our study.
+This study utilizes three main datasets from the English Women's Football (EWF) Database [@EWF]:
+
+1. *`ewf_matches`*: Contains all matches played with details like date, attendance, team and scores.
+
+2. *`ewf_appearances`*:  Contains team-level information for each match, linking teams to their goals and results.
+
+3. *`ewf_standings`*: Contains end-of-season standings, including points, goals for/against, and final positions.
+
+While other datasets, such as FIFA or Opta's proprietary data, exist, they are not as accessible or as granular at the domestic match level. The EWF dataset is chosen for its open availability, rich detail, and focus on the English domestic league structure. This level of granularity (per-match attendance and scores, historical standings) is critical to the research questions here, making the EWF dataset the most suitable for our study.
+
+## Measurement and Variable Constructions 
+	
+Each match played in the Women’s Super League translates into one or more structured entries in the dataset. For instance, a match between Arsenal and Chelsea that took place on March 1, 2022, with a recorded attendance of 3,500 spectators and a final score of Arsenal 2 – Chelsea 1, becomes a record in the EWF matches file. The attendance figure is typically taken from official league sources, ensuring reliable measurement. The goals for each team are recorded from match officials’ reports. Similarly, the final league standings at the end of the season, which reflect teams’ cumulative performance and points, are aggregated from individual match results. This chain of measurement ensures that every number in the dataset corresponds to a specific, verifiable real-world event.
+
+*Attendance* is recorded as the number of spectators present at each match. This variable captures the level of audience engagement and is an indicator of the popularity of the match. Attendance figures are sourced from official league records, ensuring reliability. However, missing values in the attendance data required filtering to maintain consistency in the analysis.
+
+*Match outcomes* are recorded as categorical variables, with values such as “Home Win,” “Away Win,” and “Draw.” These categories are derived directly from match results and are used to evaluate performance trends. These constructed variables allow easier interpretation of offensive and defensive strength.
+
+*Score Margins* (home_team_score_margin, away_team_score_margin) are constructed by subtracting the opponent’s goals from a team’s goals in a specific match. This transformation provides a numeric sense of dominance or competitiveness in a game.
+
+The team standings data, recorded at the end of each season, includes metrics such as points earned, goals scored, and final league position. These measurements help to contextualize team performances over multiple seasons and allow for comparative analysis between teams and over time.
 
 ### Variables of Interest
 
-1. Match-Level Variables (ewf_matches)
+1. *Season and Tier Variables:* 
 
-- Season ID (season_id): A unique identifier for each season, allowing us to differentiate between different periods in the dataset.
+- Season ID (season_id): Identifies the season in a format like “2021–2022”. It connects matches to a specific timeframe and competition format. This variable helps track temporal trends.
 
-- Season (season): Represents the year(s) of each season. This variable helps track temporal trends in attendance and performance.
+- Tier (tier): Indicates whether the match was played in the top tier (1) or second tier (2). This classification captures differences in competition level, resources, and potentially attendance patterns.
 
-- Tier (tier): Indicates the level of the competition, with the Women's Super League generally representing the highest tier. Differences in performance and attendance across tiers are captured through this variable.
+2. *Match Identifiers and Structure:* 
 
-- Division (division): Provides additional categorization of the league (e.g., "FA Women's Super League (WSL)").
-
-- Match ID (match_id): A unique identifier for each match.
-
-- Match Name (match_name): The competing teams in each match.
+- Match ID (match_id) and Match Name (match_name): : Unique identifiers specifying the teams involved. These ensure each match is distinguishable and can be cross-referenced with other variables.
 
 - Date (date): The date the match was played. This variable is important for tracking seasonal and temporal trends.
 
-- Attendance (attendance): The number of spectators present at each match. Missing values were filtered out to ensure data consistency.
-
 - Home Team Score Margin (home_team_score_margin) and Away Team Score Margin (away_team_score_margin): Calculated as the difference between goals scored by the respective team and the opponent. These variables provide insight into match competitiveness.
 
-- The outcome variables of interest in this study include match attendance and match outcomes. To understand these outcomes, we provide graphical and tabular representations.
+3. *Attendance Metrics* 
 
-### Attendance
+- Attendance (attendance): The number of spectators present at each match. No substantial transformations were needed, although matches without reported attendance were excluded from attendance-specific analyses.The attendance variable captures the number of spectators present at each match, serving as a proxy for fan engagement and the overall popularity of the Women's Super League. Analyzing attendance trends not only provides insights into the growth trajectory of women's football but also highlights key moments that have driven fan interest. Figure @fig-attendance-over-time illustrates the evolution of attendance over time, which shows key shifts and spikes in audience behavior, we can see from @fig-attendance-distribution and @tbl-attendance-summary that attendance is most around the 1000-2000 atendees range. The notable spikes during certain seasons, often corresponding with major international tournaments or high-profile matches. For instance, attendance saw a significant increase following the FIFA Women's World Cup, indicating a spillover effect where global events bolster domestic league interest. This suggests that leveraging international exposure through strategic marketing and scheduling can have a profound impact on league engagement. @tbl-attendance-summary shows the summary of attendance. 
 
-The attendance variable captures the number of spectators present at each match, serving as a proxy for fan engagement and the overall popularity of the Women's Super League. Analyzing attendance trends not only provides insights into the growth trajectory of women's football but also highlights key moments that have driven fan interest. Figure @fig-attendance-over-time illustrates the evolution of attendance over time, uncovering critical shifts and spikes in audience behavior, we can see from @fig-attendance-distribution and @tbl-attendance-summary that attendance is most around the 1000-2000 atendees range. The notable spikes during certain seasons, often corresponding with major international tournaments or high-profile matches. For instance, attendance saw a significant increase following the FIFA Women's World Cup, indicating a spillover effect where global events bolster domestic league interest. This suggests that leveraging international exposure through strategic marketing and scheduling can have a profound impact on league engagement. @tbl-attendance-summary shows the summary of attendance. 
+```{r}
+#| echo: false
+#| eval: true
+#| warning: false
+#| message: false
+#| label: fig-attendance-distribution
+#| fig-cap: "Histogram showing the distribution of match attendance in the Women's Super League."
+
+cleaned_data %>%
+  ggplot(aes(x = attendance)) +
+  geom_histogram(binwidth = 500, fill = "skyblue", color = "black") +
+  labs(
+    title = "Distribution of Match Attendance",
+    x = "Attendance",
+    y = "Frequency"
+  ) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+```
 
 ```{r}
 #| echo: false
@@ -128,16 +138,16 @@ The attendance variable captures the number of spectators present at each match,
 
 attendance_summary <- cleaned_data %>%
   summarise(
-    Total_Matches = n(),
-    Avg_Attendance = mean(attendance, na.rm = TRUE),
-    Median_Attendance = median(attendance, na.rm = TRUE),
-    Max_Attendance = max(attendance, na.rm = TRUE),
-    Min_Attendance = min(attendance, na.rm = TRUE)
+    "Total Matches Played" = n(),
+    "Average Attendance" = mean(attendance, na.rm = TRUE),
+    "Median Attendance" = median(attendance, na.rm = TRUE),
+    "Highest Attendance" = max(attendance, na.rm = TRUE),
+    "Lowest Attendance" = min(attendance, na.rm = TRUE)
   )
 
 knitr::kable(
   attendance_summary,
-  caption = "Summary statistics of match attendance in the Women's Super League"
+  caption = NULL
 )
 ```
 
@@ -162,49 +172,30 @@ cleaned_data %>%
   theme(plot.title = element_text(hjust = 0.5))
 ```
 
-```{r}
-#| echo: false
-#| eval: true
-#| warning: false
-#| message: false
-#| label: fig-attendance-distribution
-#| fig-cap: "Histogram showing the distribution of match attendance in the Women's Super League."
 
-cleaned_data %>%
-  ggplot(aes(x = attendance)) +
-  geom_histogram(binwidth = 500, fill = "skyblue", color = "black") +
-  labs(
-    title = "Distribution of Match Attendance",
-    x = "Attendance",
-    y = "Frequency"
-  ) +
-  theme_minimal() +
-  theme(plot.title = element_text(hjust = 0.5))
-```
+4. *Match Outcomes* 
 
+The match *outcomes* variable is a categorical outcome representing whether the home team won, the away team won, or if the match ended in a draw. This outcome helps to assess the impact of various predictors, such as attendance, on the likelihood of different results. As shown in Figure @fig-attendance-by-outcome, the distribution of match attendance varies slightly across match outcomes. This plot excludes outliers and focuses on typical audience sizes, providing a clearer comparison between Home Wins, Away Wins, and Draws. @tbl-match-outcomes-summary summarizes the average attendance and total matches for each match outcome in the Women's Super League, showing that there games where home team won, had more audience. @tbl-goal-statistics provides summary statistics of attendance, showing the minimum, median, mean, and maximum values across all recorded matches.
 
 ```{r}
 #| echo: false
 #| eval: true
 #| warning: false
 #| message: false
-ewf_standings %>%
-  ggplot(aes(x = goals_for, y = points)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = FALSE) +
-  labs(
-    title = "Relationship Between Goals Scored and Points Earned",
-    x = "Goals Scored",
-    y = "Points"
-  ) +
-  theme_minimal() +
-  theme(plot.title = element_text(hjust = 0.5))
+#| label: tbl-goal-statistics
+#| tbl-cap: "Summary statistics for goals for and points across all seasons"
+
+gp_summary <- ewf_standings %>%
+  summarise(
+    "Mean Goals For" = mean(goals_for, na.rm = TRUE),
+    "Median Goals For" = median(goals_for, na.rm = TRUE),
+    "Mean Points" = mean(points, na.rm = TRUE),
+    "Median Points" = median(points, na.rm = TRUE)
+  )
+
+knitr::kable(gp_summary,
+             caption = NULL)
 ```
-
-### Match Outcomes
-
-The match outcomes variable is a categorical outcome representing whether the home team won, the away team won, or if the match ended in a draw. This outcome helps to assess the impact of various predictors, such as attendance, on the likelihood of different results. As shown in Figure @fig-attendance-by-outcome, the distribution of match attendance varies slightly across match outcomes. This plot excludes outliers and focuses on typical audience sizes, providing a clearer comparison between Home Wins, Away Wins, and Draws. @tbl-match-outcomes-summary summarizes the average attendance and total matches for each match outcome in the Women's Super League, showing that there games where home team won, had more audience. 
-
 
 ```{r}
 #| echo: false
@@ -232,12 +223,12 @@ attendance_filtered %>%
 ```
 
 ```{r}
-#| label: tbl-match-outcomes-summary
-#| tbl-cap: "Summary statistics for match outcomes by attendance and other predictors."
 #| echo: false
 #| eval: true
 #| warning: false
 #| message: false
+#| label: tbl-match-outcomes-summary
+#| tbl-cap: "Summary statistics for match outcomes by attendance and other predictors."
 
 match_outcome_summary <- cleaned_data %>%
   group_by(result) %>%
@@ -248,10 +239,11 @@ match_outcome_summary <- cleaned_data %>%
 
 knitr::kable(
   match_outcome_summary,
-  caption = "Summary statistics for match outcomes by attendance and other predictors.",
+  caption = NULL,
   col.names = c("Match Outcome", "Average Attendance", "Total Matches")
 )
 ```
+
 # Model {#sec-model}
 
 The goal of our modeling strategy is to understand how match characteristics affect both attendance and match outcomes. We employ two types of regression models:
