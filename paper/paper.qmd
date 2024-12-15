@@ -246,13 +246,19 @@ knitr::kable(
 
 # Model {#sec-model}
 
-The goal of our modeling strategy is to understand how match characteristics affect both attendance and match outcomes. We employ two types of regression models:
+The primary goal of our modeling is to quantify the relationships between match-level factors—such as attendance, competitiveness (score margins), and tier—and key outcomes (match attendance levels, match results, and team points). Based on the data described previously, we emploed three models:
 
-1. Linear Regression to Predict Match Attendance.
+1. *Linear Regression Model for Match Attendance:*  
+   To understand which factors influence the number of spectators.
 
-2. Logistic Regression to Predict Match Outcomes (Home Win Probability).
+2. *Logistic Regression Model for Match Outcomes:*  
+   To estimate the probability of a home win, incorporating attendance and performance indicators.
 
-These models allow us to quantify the impact of factors such as goals scored, goals conceded, and attendance on match success and fan engagement. We also run the models in R [@citeR] using the `rstanarm` package of [@rstanarm]. We use the default priors from `rstanarm`. 
+3. *Linear Regression Model for Team Points:*
+   To link season-long performance metrics (goals scored and conceded) to overall success (points earned).
+
+These models allow us to quantify the impact of factors such as goals scored, goals conceded, and attendance on match success and fan engagement. All models were fitted using R [@citeR] and the `rstanarm` package for Bayesian regression with default priors [@rstanarm]. 
+
 
 ```{r}
 #| label: fig-predictor-distribution
@@ -377,25 +383,28 @@ The results indicate that scoring more goals positively impacts the number of po
 
 The models chosen are well-suited for the goals of the analysis as linear regression for attendance and team points provides a straightforward method to determine the relationship between several continuous and categorical predictors and the response variables.
 
-Logistic regression for match outcomes appropriately models a binary response variable, allowing us to estimate the probability of a specific result (home win).
+Logistic regression for match outcomes appropriately models a binary response variable, allowing us to estimate the probability of a specific result (home win). While the default priors are used here for simplicity, these could be refined if domain expertise suggested particular parameter distributions.
 
-The inclusion of variables such as attendance, score margins, and tier helps capture the essential dynamics influencing match outcomes and team success. Including these features reflects the aspects discussed in the data section, where attendance serves as a proxy for crowd support, and score margins indicate competitive balance. While logistic regression was ultimately chosen for predicting match outcomes, alternative methods such as Poisson regression explored for their suitability in modeling count-based phenomena like goals scored. However, logistic regression was better for its interpretability and alignment with binary outcomes.
+The inclusion of variables such as attendance, score margins, and tier helps capture the essential dynamics influencing match outcomes and team success. Including these features reflects the aspects discussed in the data section, where attendance serves as a proxy for crowd support, and score margins indicate competitive balance. While logistic regression was ultimately chosen for predicting match outcomes, alternative methods such as Poisson regression explored for their suitability in modeling count-based phenomena like goals scored so it was not chosen due to the main interest being on outcomes and points rather than raw goal counts. Also hierarchical models could account for team-level variability, but would add complexity. The current approach focuses on fixed effects for clarity and interpretability. By considering these alternatives and justifying our chosen models, we show that the final approach is both reasonable and aligned with the research questions and the nature of the data.
 
 #### Assumptions and Limitations
 
-- Linearity: The linear regression models assume a linear relationship between the predictors and the response. This may not fully capture the complex dynamics of sports events.
+- **Linearity:** The linear models assume a linear relationship between predictors and the outcome. Non-linearities, if present, are not modeled here, but could be explored if diagnostics suggest it.
 
-- Independence: The models assume that observations are independent, which may not hold if there are underlying correlations (e.g., team performance across matches).
+- **Independence of Observations:** Matches involving the same teams might be correlated. We do not model random effects here for simplicity, but this could be considered if team-level clustering emerges as important.
 
-- Error Normality: The linear models assume that error terms are normally distributed.
+- **Distributional Assumptions:** For linear models, we assume normally distributed residuals. The logistic model assumes a Bernoulli outcome with a logit link. These are standard assumptions. 
 
 #### Model Validation and Diagnostics
 
-- Training and Testing Split: The data was split into training and testing sets to evaluate model performance.
+Found in the Appendix : 
 
-- Model Diagnostics: Residual analysis and diagnostic plots were used to check for linear regression assumptions. For logistic regression, goodness-of-fit was assessed using measures like deviance.
+- **Data Splits:** The dataset is divided into training and test sets. Models are fitted on training sets, and performance metrics (RMSE for linear models, accuracy/log-loss for logistic models) are evaluated on test sets.
 
-- Validation Metrics: Root Mean Square Error (RMSE) was used for linear models, and accuracy was used for logistic regression to evaluate predictive performance.
+- **Diagnostics:** Residual plots, posterior predictive checks, and chain convergence diagnostics (for Bayesian fitting) ensure model appropriateness.
+
+- **Sensitivity Analyses:** Alternative specifications (e.g., dropping outliers or using different prior strengths) may be explored to assess robustness.
+
 
 # Results {#sec-results}
 
@@ -411,9 +420,9 @@ These findings are useful for team managers and league organizers in developing 
 
 # Discussion {#sec-discussion}
 
-## Understanding the Factors that Drive Match Attendance {#sec-first-point}
+## Big events Understanding the Factors that Drive Match Attendance {#sec-first-point}
 
-This paper explores factors influencing match attendance and performance in the Women's Super League. One of the key findings is that attendance has generally increased over time, with major events and international tournaments serving as pivotal moments that boost interest in women's football. Understanding what drives this interest allows league organizers to align promotional efforts with these catalysts. 
+One of the key findings is that attendance has generally increased over time, with major events and international tournaments serving as pivotal moments that boost interest in women's football. Understanding what drives this interest allows league organizers to align promotional efforts with these catalysts. 
 
 The correlation between attendance and home team success suggests that fan presence can impact match outcomes, likely by providing a motivational boost to players. The findings here indicate that increasing audience engagement could have tangible benefits for home team performance.
 
@@ -535,27 +544,37 @@ Additionally, a comparison of posterior distributions with prior distributions i
 #| label: fig-ppcheckandposteriorvsprior
 
 # Posterior predictive check
-# pp_check(attendance_model_data, fun = "hist")
+#pp_check(attendance_model, fun = "hist")
 ```
 
 ### Assumption Checks
-Diagnostic plots were generated to check for the assumptions of linear regression, @fig-Assumption including:
+Diagnostic plots were generated to check for the assumptions of linear regression including:
 
 **Residuals vs. Fitted Values:**
-- This plot checks the linearity assumption by examining whether residuals have constant variance and are centered around zero.
+- This plot checks the linearity assumption by examining whether residuals have constant variance and are centered around zero @fig-res.
 
 **Q-Q Plot for Normality:**
-- This plot assesses whether residuals are normally distributed, a critical assumption for inference in linear regression models.
-
+- This plot assesses whether residuals are normally distributed, a critical assumption for inference in linear regression models @fig-qq.
 
 ```{r}
 #| echo: false
 #| eval: true
 #| warning: false
 #| message: false
-#| label: fig-Assumption
+#| label: fig-res
+#| fig-cap: "Diagnostic plot for linear regression assumptions: The Residuals vs. Fitted Values plot checks for linearity and homoscedasticity by assessing whether residuals are randomly dispersed around zero with constant variance."
+
 # Residual vs Fitted values
 plot(attendance_model, which = 1)
+```
+```{r}
+#| echo: false
+#| eval: true
+#| warning: false
+#| message: false
+#| label: fig-qq
+#| fig-cap: "Diagnostic plots for linear regression assumptions: The Q-Q plot evaluates the normality of residuals, ensuring they follow a standard normal distribution critical for valid inference in linear regression."
+
 
 # Q-Q plot for normality of residuals
 plot(attendance_model, which = 2)
@@ -582,6 +601,8 @@ The dataset was split into training (80%) and testing (20%) sets to validate the
 #| warning: false
 #| message: false
 #| label: tbl-model-validation
+#| tbl-cap: "Performance metrics for the linear model predicting attendance."
+
 # Train-test split
 set.seed(2024)
 train_index <- createDataPartition(cleaned_data$attendance, p = 0.8, list = FALSE)
@@ -608,18 +629,23 @@ metrics <- data.frame(
 
 # Display the table
 knitr::kable(
-  metrics,
-  caption = "Performance metrics for the linear model predicting attendance."
+  metrics
 )
 ```
+
+\newpage
+
 ### Residual Analysis:
-- Residuals plotted against each predictor to identify non-linear relationships or heteroscedasticity.
+- Residuals plotted against each predictor to identify non-linear relationships or heteroscedasticity @fig-resid.
 
 ```{r}
 #| echo: false
 #| eval: true
 #| warning: false
 #| message: false
+#| label: fig-resid
+#| fig-cap: "Residuals plotted against each predictor to identify non-linear relationships or heteroscedasticity."
+
 par(mfrow = c(2, 2))
 plot(attendance_model)
 ```
