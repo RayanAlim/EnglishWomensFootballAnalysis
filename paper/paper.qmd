@@ -6,7 +6,7 @@ author:
 thanks: "Code and data are available at: [github.com/RayanAlim/EnglishWomensFootballAnalysis/](https://github.com/RayanAlim/EnglishWomensFootballAnalysis)."
 date: December 3, 2024
 date-format: long
-abstract: "This paper analyzes attendance and performance trends in the Women’s Super League (WSL) using data from the English Women's Football (EWF) Database. We examine the evolution of attendance over time and evaluate how key factors—such as goals scored, goals conceded, and league tier—influence both match-level outcomes and season-level team performance. Using regression modeling, we find that match attendance has grown substantially, correlating with higher probabilities of home-team success, suggesting a measurable 'home advantage.' These insights provide actionable information for enhancing fan engagement strategies and guiding team development, especially as the intrest in womens sports increases globally."
+abstract: "This paper analyzes attendance and performance trends in the Women’s Super League (WSL) using data from the English Women's Football (EWF) Database. We examine the evolution of attendance over time and evaluate how key factors—such as goals scored, goals conceded, and league tier—influence both match-level outcomes and season-level team performance. Using regression modeling, we find that match attendance has grown substantially, correlating with higher probabilities of home-team success, suggesting a measurable 'home advantage.' These findings provide actionable information for enhancing fan engagement strategies and guiding team development, especially as the intrest in womens sports increases globally."
 format: pdf
 number-sections: true
 toc: true
@@ -50,13 +50,13 @@ team_performance_model <- readRDS(here::here("models", "team_performance_model.r
 ```
 # Introduction
 
-Women’s professional football in England (and globally) has experienced substantial growth in recent years, notably reflected in the Women’s Super League (WSL). Increased media coverage, enhanced professionalism, and international success of national teams have all contributed to rising attendance and interest @vanEekeren2022 @Kitching2022. Understanding the determinants of match attendance and performance outcomes is valuable for clubs, team analysts, league organizers, and stakeholders seeking to enhance fan engagement, team performances and competitive standards as demonstrated by @GarciaRodriguez2002, attendance determinants can be significantly influenced by local factors.
+Women’s professional football in England (and globally) has experienced substantial growth in recent years, notably reflected in the Women’s Super League (WSL). Increased media coverage, enhanced professionalism, and international success of national teams have all contributed to rising attendance and interest @vanEekeren2022 @Kitching2022. Understanding the determinants of match attendance and performance outcomes asissts clubs, team analysts, league organizers, and stakeholders seeking to enhance fan engagement, team performances and competitive standards as demonstrated by @GarciaRodriguez2002, attendance determinants can be significantly influenced by local factors.
 
 This paper explores two central themes: the evolution of match attendance over time and the relationship between key performance indicators (e.g., goals scored, goals conceded) and both match-level outcomes (win, draw, loss) and season-level performance (final standings, points accrued). Using the English Women’s Football (EWF) Database(@EWF)- a historical record of top-tier and second-tier women’s football in England- we analyze how attendance trends correlate with on-field results and whether home teams benefit from larger crowds.
 
 The estimand is to understand how factors like attendance, goals, and tier level influence match results and team points. Our findings reveal that attendance has steadily increased, especially around peak events and growth phases of the league. Higher attendance correlates with a greater likelihood of home-team success, suggesting a measurable “home advantage.” Additionally, goals scored and conceded are strong predictors of a team’s season-long performance. The analysis also finds that attendance has generally increased over time, with certain key events serving as catalysts for spikes in crowd size.
 
-This research matters because it provides insights into what drives successful outcomes and robust fan engagement in women’s football. It informs strategic decision-making for clubs aiming to improve both their on-field performances and the experiences they offer to supporters, for organizers to boost engagement, and for analysts interested in understanding sports dynamics. More broadly, these findings are particularly significant as women's sports experience unprecedented growth globally,this study contributes to the growing body of literature that underscores the economic and cultural value of women's football where robust data-driven evidence can shape policy, marketing, and development strategies.
+This research matters because it provides an outlook into what leads to successful outcomes and robust fan engagement in women’s football. It informs strategic decision-making for clubs aiming to improve both their on-field performances and the experiences they offer to supporters, for organizers to boost engagement, and for analysts interested in understanding sports dynamics. More broadly, these findings are particularly significant as women's sports experience unprecedented growth globally,this study contributes to the growing body of literature that underscores the economic and cultural value of women's football where robust data based evidence can shape policy, marketing, and development strategies.
 
 The remainder of this paper is structured as follows: The Data @sec-data discusses the data sources and cleaning processes. The Model @sec-model outlines the model used to evaluate match outcomes. The Results @sec-results presents the key findings from the data analysis, and the Discussion @sec-discussion provides a summary of what we have learned and suggests potential areas for future research.
 
@@ -74,7 +74,7 @@ This study utilizes three main datasets from the English Women's Football (EWF) 
 
 3. *`ewf_standings`*: Contains end-of-season standings, including points, goals for/against, and final positions.
 
-While other datasets, such as FIFA or Opta's proprietary data, exist, they are not as accessible or as granular at the domestic match level. The EWF dataset is chosen for its open availability, rich detail, and focus on the English domestic league structure. This level of granularity (per-match attendance and scores, historical standings) is critical to the research questions here, making the EWF dataset the most suitable for our study.
+While other datasets, such as FIFA or Opta's proprietary data, exist, they are not as accessible or as granular at the domestic match level. The EWF dataset is chosen for its open availability, rich detail, and focus on the English domestic league structure. This level of granularity (per-match attendance and scores, historical standings) is needed for the research questions here, making the EWF dataset the most suitable for our study.
 
 ## Measurement and Variable Constructions 
 	
@@ -102,11 +102,11 @@ The team standings data, recorded at the end of each season, includes metrics su
 
 - Date (date): The date the match was played. This variable is important for tracking seasonal and temporal trends.
 
-- Home Team Score Margin (home_team_score_margin) and Away Team Score Margin (away_team_score_margin): Calculated as the difference between goals scored by the respective team and the opponent. These variables provide insight into match competitiveness.
+- Home Team Score Margin (home_team_score_margin) and Away Team Score Margin (away_team_score_margin): Calculated as the difference between goals scored by the respective team and the opponent. These variables provide an understanding into match competitiveness.
 
 3. *Attendance Metrics* 
 
-- Attendance (attendance): The number of spectators present at each match. No substantial transformations were needed, although matches without reported attendance were excluded from attendance-specific analyses.The attendance variable captures the number of spectators present at each match, serving as a proxy for fan engagement and the overall popularity of the Women's Super League. Analyzing attendance trends not only provides insights into the growth trajectory of women's football but also highlights key moments that have driven fan interest. Figure @fig-attendance-over-time illustrates the evolution of attendance over time, which shows key shifts and spikes in audience behavior, we can see from @fig-attendance-distribution and @tbl-attendance-summary that attendance is most around the 1000-2000 atendees range. The notable spikes during certain seasons, often corresponding with major international tournaments or high-profile matches. For instance, attendance saw a significant increase following the FIFA Women's World Cup, indicating a spillover effect where global events bolster domestic league interest. This suggests that leveraging international exposure through strategic marketing and scheduling can have a profound impact on league engagement. @tbl-attendance-summary shows the summary of attendance. 
+- Attendance (attendance): The number of spectators present at each match. No substantial transformations were needed, although matches without reported attendance were excluded from attendance-specific analyses.The attendance variable captures the number of spectators present at each match, serving as a proxy for fan engagement and the overall popularity of the Women's Super League. Analyzing attendance trends not only provides us information about the growth trajectory of women's football but also highlights key moments that have driven fan interest. Figure @fig-attendance-over-time illustrates the evolution of attendance over time, which shows key shifts and spikes in audience behavior, we can see from @fig-attendance-distribution and @tbl-attendance-summary that attendance is most around the 1000-2000 atendees range. The notable spikes during certain seasons, often corresponding with major international tournaments or high-profile matches. For instance, attendance saw a significant increase following the FIFA Women's World Cup, indicating a spillover effect where global events bolster domestic league interest. This suggests that leveraging international exposure through strategic marketing and scheduling can have a huge impact on league engagement. @tbl-attendance-summary shows the summary of attendance. 
 
 ```{r}
 #| echo: false
@@ -325,7 +325,7 @@ Where:
 
 This model captures how the identity of the teams playing and the competitive nature of the match (score margins) influence attendance.
 
-The analysis reveals that factors such as the teams playing and the score margin (both home and away) are significant predictors of match attendance. Popular teams and closely contested matches tend to attract more spectators.
+The analysis highlights that factors such as the teams playing and the score margin (both home and away) are significant predictors of match attendance. Popular teams and closely contested matches tend to attract more spectators.
 
 ### Model 2: Predicting Match Outcome
 
@@ -348,7 +348,7 @@ Where:
 
 - $X_{home_team_score_margin_i}$, $X_{away_team_score_margin_i}$: Score margins for home and away teams in match $i$
 
-The logistic regression results show that higher attendance significantly increases the probability of a home team victory, suggesting the influence of crowd support. Furthermore, the score margins for both teams are critical factors in determining match outcomes.
+The logistic regression results show that higher attendance significantly increases the probability of a home team victory, suggesting the influence of crowd support. Furthermore, the score margins for both teams are important factors in determining match outcomes.
 
 ### Model 3: Predicting Team Performance
 
@@ -422,29 +422,29 @@ These findings are useful for team managers and league organizers in developing 
 
 ## Big events Understanding the Factors that Drive Match Attendance {#sec-first-point}
 
-One of the key findings is that attendance has generally increased over time, with major events and international tournaments serving as pivotal moments that boost interest in women's football. Understanding what drives this interest allows league organizers to align promotional efforts with these catalysts. 
+One of the key findings is that attendance has generally increased over time, with major events and international tournaments serving as pivotal moments that boost interest in women's football. Understanding what is the basis of this interest allows league organizers to align promotional efforts with these catalysts. 
 
 The correlation between attendance and home team success suggests that fan presence can impact match outcomes, likely by providing a motivational boost to players. The findings here indicate that increasing audience engagement could have tangible benefits for home team performance.
 
-## Both offensive and defensive abilities are crucial for a team's performance
+## Both offensive and defensive abilities are key for a team's performance
 
-Another key observation is the direct impact of goals scored and goals conceded on team standings. Goals scored positively affect match outcomes, as expected, while goals conceded correlate negatively with team success. These results confirm the intuitive idea that both offensive and defensive abilities are crucial for a team's performance. It is not enough to simply score goals-preventing the opponent from scoring also plays an important role.
+Another key observation is the direct impact of goals scored and goals conceded on team standings. Goals scored positively affect match outcomes, as expected, while goals conceded correlate negatively with team success. These results confirm the intuitive idea that both offensive and defensive abilities are key for a team's performance. It is not enough to simply score goals-preventing the opponent from scoring also plays an important role.
 
 ## Home-Field Advantage: Larger crowds positively correlated with wins at Home turf
 
-Moreover, the analysis of attendance reveals that larger crowds tend to coincide with better performances for the home team. This finding highlights the potential advantage that crowd support can provide, supporting the concept of "home-field advantage" in sports.
+Moreover, the analysis of attendance shows us that larger crowds tend to coincide with better performances for the home team. This finding highlights the potential advantage that crowd support can provide, supporting the concept of "home-field advantage" in sports.
 
 ## Implications for Teams and Organizers
 
 The results also suggest that teams should focus on improving both offensive capabilities and defensive solidity to succeed. Beyond game tactics, teams and league organizers should continue to work on increasing fan attendance, as the presence of spectators has a clear impact on home team success. This can be achieved through better marketing, improved game day experiences, and leveraging international events to draw in larger audiences.
 
-For organizers, these insights are valuable for shaping promotional strategies that increase attendance, leveraging key calendar events, and enhancing audience experience, thereby boosting overall league engagement and team performance.
+For organizers, these findings help in shaping promotional strategies that increase attendance, leveraging key calendar events, and enhancing audience experience, thereby boosting overall league engagement and team performance.
 
 ## Weaknesses and Next Steps {#sec-weaknesses}
 
 There are several limitations in the current study that should be addressed in future research. Firstly, the dataset used only spans from 2011-2018, which limitits the generalizability of these results. Extending the analysis to include more seasons would provide a better understanding of longer-term trends.
 
-Another limitation is the absence of player-specific performance metrics. Incorporating individual-level data, such as player fatigue or injuries, would add depth to our understanding of what drives match outcomes. Future models could incorporate additional predictors to improve predictive power and capture the complex dynamics of match performance.
+Another limitation is the absence of player-specific performance metrics. Incorporating individual-level data, such as player fatigue or injuries, would add depth to our understanding of what affects match outcomes. Future models could incorporate additional predictors to improve predictive power and capture the complex dynamics of match performance.
 
 Further research should also consider qualitative factors like weather conditions or managerial changes, which could have significant effects on match outcomes but are not captured in the current quantitative analysis. It would also be useful to explore the impact of specific international events on audience engagement to better understand how these events can be utilized for marketing and promotion.
 
@@ -470,7 +470,7 @@ The data for this study was obtained from the English Women's Football (EWF) Dat
   Match outcomes and performance data, such as goals scored and conceded, are derived from official match reports. These sources are generally reliable, but the possibility of reporting errors, particularly in historical records, cannot be ignored.
 
 - **Survey Data:**  
-  While this study does not directly use survey data, similar analyses in the literature often rely on surveys to capture fan demographics, motivations, and preferences. Incorporating such surveys into future research could provide richer contextual insights.
+  While this study does not directly use survey data, similar analyses in the literature often rely on surveys to capture fan demographics, motivations, and preferences. Incorporating such surveys into future research could provide richer contextual understanding
 
 ## Sampling Considerations
 
@@ -532,7 +532,7 @@ The English Women's Football (EWF) Database provided detailed match, attendance,
 ## Model Details and Validation {#sec-model-details}
 
 ### Posterior Predictive Check
-A posterior predictive check was conducted to evaluate the extent to which the model captures the patterns in the observed data. In @fig-ppcheckandposteriorvsprior, the observed data is compared against replicated datasets generated from the posterior distribution of the model parameters. This diagnostic provides insights into areas where the model may underfit or overfit the data.
+A posterior predictive check was conducted to evaluate the extent to which the model captures the patterns in the observed data. In @fig-ppcheckandposteriorvsprior, the observed data is compared against replicated datasets generated from the posterior distribution of the model parameters. This diagnostic highlights potential areas where the model might underperform or overfit the data.
 
 Additionally, a comparison of posterior distributions with prior distributions is included. This comparison highlights how the data has influenced the model’s parameters, illustrating the extent to which prior beliefs have been updated by observed evidence.
 
@@ -573,7 +573,7 @@ plot(attendance_model, which = 1)
 #| warning: false
 #| message: false
 #| label: fig-qq
-#| fig-cap: "Diagnostic plots for linear regression assumptions: The Q-Q plot evaluates the normality of residuals, ensuring they follow a standard normal distribution critical for valid inference in linear regression."
+#| fig-cap: "Diagnostic plots for linear regression assumptions: The Q-Q plot evaluates the normality of residuals, ensuring they follow a standard normal distribution for valid inference in linear regression."
 
 
 # Q-Q plot for normality of residuals
